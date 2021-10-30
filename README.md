@@ -1,2 +1,2 @@
 # dotfiles
-Setup for vim / neovim and zsh
+dotfiles for personal use
