@@ -293,6 +293,7 @@ let g:netrw_bufsettings = 'noma nomod nu rnu nobl nowrap ro'
 " Inspiration: https://discourse.getdbt.com/t/syntax-highlighting-sql-linting/15/3
 autocmd FileType dbt setlocal commentstring={#%s#}
 au BufNewFile,BufRead *.sql set ft=dbt
+autocmd FileType sql setlocal commentstring=/*%s*/
 
 
 "=:==========================================================================="
