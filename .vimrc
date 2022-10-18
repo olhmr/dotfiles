@@ -281,6 +281,10 @@ vnoremap <leader>mk :m-2<CR>
 " Override default netrw behaviour to include line numbers
 let g:netrw_bufsettings = 'noma nomod nu rnu nobl nowrap ro'
 
+" Do not include netrw browsing buffer in altfile
+" This means that CTRL-^ will ignore it
+let g:netrw_altfile = 1
+
 "=:==========================================================================="
 " filetypes                                                                   "
 "============================================================================="
