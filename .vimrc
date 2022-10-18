@@ -457,6 +457,8 @@ highlight GitGutterDelete guifg='red' ctermfg=1
 " vimwiki                                                                     "
 "-----------------------------------------------------------------------------"
 let g:vimwiki_list = [{'path': '~/Documents/notes/vim-wiki'}]
+nmap <leader>w- <Plug>VimwikiRemoveHeaderLevel
+" https://github.com/vimwiki/vimwiki/issues/1099
 
 
 "-:---------------------------------------------------------------------------"
