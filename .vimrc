@@ -385,6 +385,9 @@ nnoremap <leader>fs :Snippets<CR>
 " Find tags
 nnoremap <leader>ft :Tags<CR>
 
+" Search commands
+nnoremap <leader>f<space> :Commands<CR>
+
 
 "-:---------------------------------------------------------------------------"
 " FZFMRU                                                                      "
