@@ -188,36 +188,39 @@ function bq_dry() {
 # taskwarrior                                                                 #
 #-----------------------------------------------------------------------------#
 function t() {
-  case $1 in
-  s)
-    task sync
-    ;;
-  a)
-    task active
-    ;;
-  w)
-    task $2 mod wait:1h
-    ;;
-  e)
-    # encrypt the description of a task
-    task $2 mod des:"$(echo $(task _get $1.description) | base64)"
-    ;;
-  d)
-    # decrypt the description of a task
-    task $2 mod des:"$(echo $(task _get $1.description) | base64 --decode)"
-    ;;
-  ae)
-    # add a task with base64 encoded description to make it less obvious to people glancing
-    task add $(echo $2 | base64) ${@:3}
-    ;;
-  gd)
-    # base64 decode the description to read it again
-    task _get $2.description | base64 --decode
-    ;;
-  *)
-    task $@
-    ;;
-  esac
+  task $@
+}
+
+function ts() {
+  task sync
+}
+
+function ta() {
+  task active
+}
+
+function tw() {
+  task $1 mod wait:1h
+}
+
+function te() {
+  # encrypt the description of a task
+  task $1 mod des:"$(echo $(task _get $1.description) | base64)"
+}
+
+function td() {
+  # decrypt the description of a task
+  task $1 mod des:"$(echo $(task _get $1.description) | base64 --decode)"
+}
+
+function tae() {
+  # add a task with base64 encoded description to make it less obvious to people glancing
+  task add $(echo $1 | base64) ${@:2}
+}
+
+function tgd() {
+  # base64 decode the description to read it again
+  task _get $1.description | base64 --decode
 }
 
 
