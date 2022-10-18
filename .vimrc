@@ -365,7 +365,7 @@ nnoremap <leader>fl :Lines<CR>
 " Find mark
 nnoremap <leader>fm :Marks<CR>
 
-" Find comit in current buffer
+" Find commit in current buffer
 nnoremap <leader>fc :BCommits<CR>
 
 " Search with ripgrep
