@@ -650,7 +650,7 @@ vnoremap <leader>sl :TREPLSendSelection<CR>
 
 
 "-:---------------------------------------------------------------------------"
-" vista                                                                     "
+" vista                                                                       "
 "-----------------------------------------------------------------------------"
 let g:vista_sidebar_position = 'vertical topleft'
 nnoremap <leader>v :Vista!!<CR>
