@@ -112,7 +112,7 @@ plugins=(
 # editing                                                                     #
 #-----------------------------------------------------------------------------#
 # Preferred editor
-export EDITOR='vim'
+export EDITOR='nvim'
 
 
 #-:---------------------------------------------------------------------------#
@@ -133,22 +133,22 @@ export FZF_DEFAULT_COMMAND='rg --files --hidden' # faster than the default
 #=============================================================================#
 
 #-:---------------------------------------------------------------------------#
-# vim                                                                         #
+# vim / neovim                                                                #
 #-----------------------------------------------------------------------------#
-alias v='vim'
+alias v='nvim'
 
 #-:---------------------------------------------------------------------------#
 # searching                                                                   #
 #-----------------------------------------------------------------------------#
 function f() { # search files and open in vim
-  vim -o `fzf --preview 'bat --style numbers,changes --color=always {} | head -500' $@`
+  nvim -o `fzf --preview 'bat --style numbers,changes --color=always {} | head -500' $@`
 }
 function fl() { # search only current directory and open in vim
   ls | f
 }
 function ff() { # search inside files and open in vim - https://www.reddit.com/r/commandline/comments/fu6zzp/search_file_content_with_fzf/fmb7frf?utm_source=share&utm_medium=web2x&context=3
   if [ ! "$#" -gt 0 ]; then echo "Need a string to search for!"; return 1; fi
-  vim -o `rg --files-with-matches --no-messages "$1" | fzf --preview "highlight -O ansi -l {} 2> /dev/null | rg --colors 'match:bg:yellow' --ignore-case --pretty --context 10 '$1' || rg --ignore-case --pretty --context 10 '$1' {}"`
+  nvim -o `rg --files-with-matches --no-messages "$1" | fzf --preview "highlight -O ansi -l {} 2> /dev/null | rg --colors 'match:bg:yellow' --ignore-case --pretty --context 10 '$1' || rg --ignore-case --pretty --context 10 '$1' {}"`
 }
 
 
