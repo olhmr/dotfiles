@@ -216,8 +216,9 @@ vim.keymap.set('n', '<leader>o', ':BufExplorer<cr>')
 -- neoterm
 -------------------------------------------------------------------------------
 -- in terminal mode only, override ctrl-w n to exit insert mode instead of
--- creating a new window
+-- creating a new window (also include <c-w><c-n> for convenience)
 vim.keymap.set('t', '<c-w>n', '<c-\\><c-n>')
+vim.keymap.set('t', '<c-w><c-n>', '<c-\\><c-n>')
 
 -- BigQuery
 vim.keymap.set('n', '<leader>tq', ":exec('T cat % | bq query --max_rows=100')")
