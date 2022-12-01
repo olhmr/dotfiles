@@ -356,7 +356,7 @@ augroup end
 -------------------------------------------------------------------------------
 require('telescope').load_extension('fzf')
 local builtin = require('telescope.builtin')
-vim.keymap.set('n', '<c-f>', builtin.find_files, {}) -- find files
+vim.keymap.set('n', '<c-f>', function() builtin.find_files({ hidden = true }) end, {}) -- find files
 vim.keymap.set('n', '<leader>g', builtin.live_grep, {}) -- find inside files
 vim.keymap.set('n', '<leader>fh', function() builtin.oldfiles({ only_cwd = true }) end, {}) -- find recent files
 vim.keymap.set('n', '<leader>fc', builtin.git_bcommits, {}) -- find commits in current file with diffs
@@ -373,6 +373,7 @@ require('telescope').setup{
     preview = {
       hide_on_startup = true
     },
+    file_ignore_patterns = { '.git/', '.venv' },
     file_previewer = require'telescope.previewers'.vim_buffer_cat.new,
     grep_previewer = require'telescope.previewers'.vim_buffer_vimgrep.new,
     mappings = {
