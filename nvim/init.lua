@@ -192,6 +192,7 @@ Plug 'hrsh7th/cmp-cmdline'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-vsnip'
 Plug 'hrsh7th/vim-vsnip'
+Plug 'onsails/lspkind.nvim' -- icons
 -- end autocomplete with nvim-cmp and vim-vsnip
 Plug 'lepture/vim-jinja' -- for dbt syntax to work
 
@@ -452,6 +453,7 @@ vim.g['vsnip_snippet_dir'] = '~/.config/nvim/.vsnip'
 vim.opt.completeopt = {'menu', 'menuone', 'noselect'}
 -- set up nvim-cmp.
 local cmp = require'cmp'
+local lspkind = require'lspkind'
 cmp.setup({
   snippet = {
     expand = function(args)
@@ -461,6 +463,15 @@ cmp.setup({
   window = {
     completion = cmp.config.window.bordered(),
     documentation = cmp.config.window.bordered(),
+  },
+  formatting = {
+    format = lspkind.cmp_format({
+      mode = "text_symbol",
+      menu = ({
+        buffer = "[Buffer]",
+        vsnip = "[vsnip]",
+      })
+    }),
   },
   mapping = cmp.mapping.preset.insert({
     ['<C-u>'] = cmp.mapping.scroll_docs(-4),
