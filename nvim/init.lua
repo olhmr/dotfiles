@@ -177,7 +177,7 @@ Plug 'itchyny/lightline.vim' -- status bar
 Plug 'jeetsukumaran/vim-indentwise' -- nice motions for navigating indents
 Plug 'jlanzarotta/bufexplorer' -- manage buffers
 Plug 'kassio/neoterm' -- nice terminal integration
-Plug 'morhetz/gruvbox' -- colorscheme
+Plug 'sainnhe/gruvbox-material' -- colorscheme
 Plug 'tpope/vim-commentary' -- manage comments
 Plug 'tpope/vim-fugitive' -- git
 Plug 'tpope/vim-surround' -- managing e.g. parentheses
@@ -199,11 +199,62 @@ vim.call('plug#end')
 
 
 --:----------------------------------------------------------------------------
--- gruvbox
+-- gruvbox-material
 -------------------------------------------------------------------------------
-vim.cmd('colorscheme gruvbox') -- set colorscheme
-vim.g['gruvbox_contrast_dark'] = 'hard' -- make darker
-vim.opt.background = 'dark' -- set background dark, must be after colorscheme is loaded
+vim.g['gruvbox_material_visual'] = 'reverse' -- visual line selection
+vim.g['gruvbox_material_better_performance'] = 1
+vim.g['gruvbox_material_disable_italic_comment'] = 1
+vim.g['gruvbox_material_enable_bold'] = 1
+
+-- add highlightgroups for nvim-cmp completion
+vim.cmd [[
+  function! s:gruvbox_material_custom() abort
+    highlight! link CmpItemAbbrDeprecated Grey
+    highlight! link CmpItemAbbrMatch GreyBold
+    highlight! link CmpItemAbbrMatchFuzzy GreyBold
+    highlight! link CmpItemMenu GreyItalic
+
+    highlight! link CmpItemKindField Red
+    highlight! link CmpItemKindProperty Red
+    highlight! link CmpItemKindEvent Red
+
+    highlight! link CmpItemKindText Aqua
+    highlight! link CmpItemKindEnum Aqua
+    highlight! link CmpItemKindKeyword Aqua
+
+    highlight! link CmpItemKindConstant Yellow
+    highlight! link CmpItemKindConstructor Yellow
+    highlight! link CmpItemKindReference Yellow
+
+    highlight! link CmpItemKindFunction Purple
+    highlight! link CmpItemKindStruct Purple
+    highlight! link CmpItemKindClass Purple
+    highlight! link CmpItemKindModule Purple
+    highlight! link CmpItemKindOperator Purple
+
+    highlight! link CmpItemKindVariable Aqua
+    highlight! link CmpItemKindFile Aqua
+
+    highlight! link CmpItemKindUnit Red
+    highlight! link CmpItemKindSnippet Red
+    highlight! link CmpItemKindFolder Red
+
+    highlight! link CmpItemKindMethod Purple
+    highlight! link CmpItemKindValue Purple
+    highlight! link CmpItemKindEnumMember Purple
+
+    highlight! link CmpItemKindInterface Aqua
+    highlight! link CmpItemKindColor Aqua
+    highlight! link CmpItemKindTypeParameter Aqua
+  endfunction
+
+  augroup GruvboxMaterialCustom
+    autocmd!
+    autocmd ColorScheme gruvbox-material call s:gruvbox_material_custom()
+  augroup END
+]]
+
+vim.cmd('colorscheme gruvbox-material') -- set colorscheme
 
 
 --:----------------------------------------------------------------------------
