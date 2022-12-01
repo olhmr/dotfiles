@@ -1,0 +1,16 @@
+{
+  "ref": {
+    "prefix": "ref",
+    "body": [
+      "{{ ref('${1:model_name}') }}"
+    ],
+    "description": "Ref a model"
+  },
+  "dynamic_ref": {
+    "prefix": "dynamic_ref",
+    "body": [
+      "{{ dynamic_ref('${1:model_name}') }}"
+    ],
+    "description": "Dynamic ref a model"
+  }
+}
