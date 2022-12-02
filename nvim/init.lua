@@ -195,6 +195,7 @@ Plug 'hrsh7th/vim-vsnip'
 Plug 'onsails/lspkind.nvim' -- icons
 -- end autocomplete with nvim-cmp and vim-vsnip
 Plug 'lepture/vim-jinja' -- for dbt syntax to work
+Plug 'kshenoy/vim-signature' -- handling marks
 
 vim.call('plug#end')
 
