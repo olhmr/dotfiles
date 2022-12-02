@@ -4,13 +4,52 @@
     "body": [
       "{{ ref('${1:model_name}') }}"
     ],
-    "description": "Ref a model"
+    "description": "Reference a model"
   },
   "dynamic_ref": {
     "prefix": "dynamic_ref",
     "body": [
       "{{ dynamic_ref('${1:model_name}') }}"
     ],
-    "description": "Dynamic ref a model"
+    "description": "Dynamically reference a model"
+  },
+  "source": {
+    "prefix": "source",
+    "body": [
+      "{{ source('${1:source_name}', '${2:table_name}') }}"
+    ],
+    "description": "Reference a source"
+  },
+  "macro": {
+    "prefix": "macro",
+    "body": [
+      "{% macro ${1:macro_name}(${2:args}) %}",
+      "  ${3:body}",
+      "{% endmacro %}"
+    ],
+    "description": "Create a dbt macro"
+  },
+  "config block": {
+    "prefix": ["config"],
+    "body": [
+      "{{",
+      "  config(",
+      "    database=\"${1:database}\"",
+      "    schema=\"${2:schema}\"",
+      "    materialized=\"${3:materialization}\"",
+      "    tags=[",
+      "      \"${4:tag}\"",
+      "    ]",
+      "    labels={",
+      "      \"owner\": \"${5:owner}\"",
+      "      \"environment\": \"${6:environment}\"",
+      "      \"criticality\": \"${7:criticality}\"",
+      "      \"sensitivity\": \"${8:sensitivity}\"",
+      "      \"certification\": \"${9:certification}\"",
+      "    }",
+      "  )",
+      "}}"
+    ],
+    "description": "Create a dbt config with core fields"
   }
 }

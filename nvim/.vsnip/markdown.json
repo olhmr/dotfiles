@@ -1,0 +1,11 @@
+{
+  "dbt docs snippet": {
+    "prefix": ["docs"],
+    "body": [
+      "{% docs ${1:name} %}",
+      "  ${2:description}",
+      "{% enddocs %}"
+    ],
+    "description": "Create a new dbt docs snippet"
+  }
+}

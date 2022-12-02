@@ -1,0 +1,28 @@
+{
+  "dbt table schema": {
+    "prefix": ["model"],
+    "body": [
+      "version: 2",
+      "models:",
+      "  - name: ${1:name}",
+      "    description: ${2:description}",
+      "    columns:"
+    ],
+    "description": "Create a new dbt model schema"
+  },
+  "dbt column schema entry": {
+    "prefix": ["column"],
+    "body": [
+      "- name: ${1:name}",
+      "  description: ${2:description}"
+    ],
+    "description": "Create a new column entry for a model schema"
+  },
+  "doc string": {
+    "prefix": ["doc"],
+    "body": [
+      "'{{ doc(\"${1:name}\") }}'"
+    ],
+    "description": "Reference a doc string"
+  }
+}
