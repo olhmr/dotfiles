@@ -24,7 +24,7 @@ vim.g.maplocalleader = '\\'
 vim.opt.scrolloff = 7 -- number of lines to keep on screen when scrolling
 vim.opt.shortmess:append 'c' -- always show position
 vim.opt.ruler = true
-vim.opt.cmdheight = 2 -- height of command bar
+vim.opt.cmdheight = 1 -- height of command bar
 vim.opt.foldcolumn = '0' -- amount of extra margin to the left
 vim.opt.cc = '80' -- add vertical at 80
 vim.opt.hidden = true -- hide buffers when abandoned
