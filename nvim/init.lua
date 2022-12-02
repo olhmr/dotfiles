@@ -275,6 +275,12 @@ vim.keymap.set('n', '<leader>o', ':BufExplorer<cr>')
 vim.keymap.set('t', '<c-w>n', '<c-\\><c-n>')
 vim.keymap.set('t', '<c-w><c-n>', '<c-\\><c-n>')
 
+-- use same window movement from terminal as between windows
+vim.keymap.set('t', '<c-w>h', '<c-\\><c-n><c-w>h')
+vim.keymap.set('t', '<c-w>j', '<c-\\><c-n><c-w>j')
+vim.keymap.set('t', '<c-w>k', '<c-\\><c-n><c-w>k')
+vim.keymap.set('t', '<c-w>l', '<c-\\><c-n><c-w>l')
+
 -- BigQuery
 vim.keymap.set('n', '<leader>tq', ":exec('T cat % | bq query --max_rows=100')")
 vim.keymap.set('n', '<leader>td', ":exec('T cat % | bq_dry')<CR>")
