@@ -2,7 +2,7 @@
 
 Dotfiles for personal use. Current stack:
 
-- zsh as shell
+- zsh with p10k as shell
 - neovim for editing
 - visidata for spreadsheets
 - taskwarrior for task management
