@@ -2,21 +2,21 @@
   "ref": {
     "prefix": "ref",
     "body": [
-      "{{ ref('${1:model_name}') }}"
+      "{{ ref(\"${1:model_name}\") }}"
     ],
     "description": "Reference a model"
   },
   "dynamic_ref": {
     "prefix": "dynamic_ref",
     "body": [
-      "{{ dynamic_ref('${1:model_name}') }}"
+      "{{ dynamic_ref(\"${1:model_name}\") }}"
     ],
     "description": "Dynamically reference a model"
   },
   "source": {
     "prefix": "source",
     "body": [
-      "{{ source('${1:source_name}', '${2:table_name}') }}"
+      "{{ source(\"${1:source_name}\", \"${2:table_name}\") }}"
     ],
     "description": "Reference a source"
   },
@@ -34,18 +34,19 @@
     "body": [
       "{{",
       "  config(",
-      "    database=\"${1:database}\"",
-      "    schema=\"${2:schema}\"",
-      "    materialized=\"${3:materialization}\"",
+      "    database=\"${1:database}\",",
+      "    schema=\"${2:schema}\",",
+      "    materialized=\"${3:materialization}\",",
       "    tags=[",
       "      \"${4:tag}\"",
-      "    ]",
+      "    ],",
       "    labels={",
-      "      \"owner\": \"${5:owner}\"",
-      "      \"environment\": \"${6:environment}\"",
-      "      \"criticality\": \"${7:criticality}\"",
-      "      \"sensitivity\": \"${8:sensitivity}\"",
-      "      \"certification\": \"${9:certification}\"",
+      "      \"owner\": \"${5:owner}\",",
+      "      \"environment\": \"${6:environment}\",",
+      "      \"criticality\": \"${7:criticality}\",",
+      "      \"sensitivity\": \"${8:sensitivity}\",",
+      "      \"certification\": \"${9:certification}\",",
+      "      \"is_dbt\": \"true\",",
       "    }",
       "  )",
       "}}"
