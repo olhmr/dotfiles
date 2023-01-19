@@ -9,3 +9,5 @@ options.color_active_status = 'bold 235 black on 110 cyan'
 # Show current position in status bar
 options.disp_status_fmt = '({sheet.cursorRowIndex},{sheet.cursorColIndex}) ' + options.disp_status_fmt
 
+# Make plot points more visible
+options.disp_canvas_charset = ''
