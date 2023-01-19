@@ -223,6 +223,9 @@ function tgd() {
   task _get $1.description | base64 --decode
 }
 
+function trd() {
+  task ready
+}
 
 #=:===========================================================================#
 # additional                                                                  #
