@@ -187,11 +187,14 @@ Plug 'nvim-lua/plenary.nvim' -- for telescope and nvim-metals
 Plug('nvim-telescope/telescope.nvim', { branch = '0.1.x' }) -- fuzzy finder
 Plug('nvim-telescope/telescope-fzf-native.nvim', { ['do'] = 'make' })
 -- begin autocomplete with nvim-cmp and vim-vsnip
+  -- begin LSP-specific config
 Plug 'neovim/nvim-lspconfig'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'williamboman/mason.nvim' -- lsp install
 Plug 'williamboman/mason-lspconfig.nvim' -- lsp install
 Plug 'scalameta/nvim-metals' -- scala LSP
+Plug 'mfussenegger/nvim-dap' -- scala debugging
+  -- end LSP-specific config
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-path'
 Plug 'hrsh7th/cmp-cmdline'
@@ -568,32 +571,31 @@ metals_config.init_options.statusBarProvider = "on"
 metals_config.capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 -- Debug settings if you're using nvim-dap
--- TODO: investigate this
--- local dap = require("dap")
+local dap = require("dap")
 
--- dap.configurations.scala = {
---   {
---     type = "scala",
---     request = "launch",
---     name = "RunOrTest",
---     metals = {
---       runType = "runOrTestFile",
---       --args = { "firstArg", "secondArg", "thirdArg" }, -- here just as an example
---     },
---   },
---   {
---     type = "scala",
---     request = "launch",
---     name = "Test Target",
---     metals = {
---       runType = "testTarget",
---     },
---   },
--- }
+dap.configurations.scala = {
+  {
+    type = "scala",
+    request = "launch",
+    name = "RunOrTest",
+    metals = {
+      runType = "runOrTestFile",
+      --args = { "firstArg", "secondArg", "thirdArg" }, -- here just as an example
+    },
+  },
+  {
+    type = "scala",
+    request = "launch",
+    name = "Test Target",
+    metals = {
+      runType = "testTarget",
+    },
+  },
+}
 
--- metals_config.on_attach = function(client, bufnr)
---   require("metals").setup_dap()
--- end
+metals_config.on_attach = function(client, bufnr)
+  require("metals").setup_dap()
+end
 
 -- Autocmd that will actually be in charging of starting the whole thing
 local nvim_metals_group = vim.api.nvim_create_augroup("nvim-metals", { clear = true })
