@@ -41,3 +41,23 @@ For improved performance when fuzzy finding, ensure ripgrep and fd are installed
 There are two reasons for not using treesitter:
 - ran into some bugs with the highlights being inconsistent (e.g., for SQL highlighting the alias after `AS` differently on different lines)
 - no support for jinja2 / dbt
+
+### LSPs
+
+#### Lua
+
+```
+  $ brew install lua-language-server
+```
+
+(Can also be installed via Mason)
+
+#### Python
+
+```
+  :MasonInstall pyright
+```
+
+#### Scala
+
+See https://github.com/scalameta/nvim-metals

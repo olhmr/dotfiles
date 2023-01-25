@@ -23,6 +23,7 @@ vim.g.maplocalleader = '\\'
 -------------------------------------------------------------------------------
 vim.opt.scrolloff = 7 -- number of lines to keep on screen when scrolling
 vim.opt.shortmess:append 'c' -- always show position
+vim.opt_global.shortmess:remove("F") -- for nvim-metals
 vim.opt.ruler = true
 vim.opt.cmdheight = 2 -- height of command bar
 vim.opt.foldcolumn = '0' -- amount of extra margin to the left
@@ -182,10 +183,15 @@ Plug 'tpope/vim-commentary' -- manage comments
 Plug 'tpope/vim-fugitive' -- git
 Plug 'tpope/vim-surround' -- managing e.g. parentheses
 Plug 'tpope/vim-vinegar' -- directory navigation
-Plug 'nvim-lua/plenary.nvim' -- for telescope
+Plug 'nvim-lua/plenary.nvim' -- for telescope and nvim-metals
 Plug('nvim-telescope/telescope.nvim', { branch = '0.1.x' }) -- fuzzy finder
 Plug('nvim-telescope/telescope-fzf-native.nvim', { ['do'] = 'make' })
 -- begin autocomplete with nvim-cmp and vim-vsnip
+Plug 'neovim/nvim-lspconfig'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'williamboman/mason.nvim' -- lsp install
+Plug 'williamboman/mason-lspconfig.nvim' -- lsp install
+Plug 'scalameta/nvim-metals' -- scala LSP
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-path'
 Plug 'hrsh7th/cmp-cmdline'
@@ -339,12 +345,13 @@ let g:lightline = {
       \         [ 'absolutepath', 'readonly', 'fugitive', 'modified', 'gitgutter', 'vista' ] ],
     \ 'right': [ [ 'percent', 'lineinfo' ],
       \          [ 'fileformat', 'fileencoding', 'filetype' ],
-      \          [ 'linter_warnings', 'linter_errors', 'linter_ok' ] ]
+      \          [ 'linter_warnings', 'linter_errors', 'linter_ok', 'metals_status' ] ]
   \ },
   \ 'component_function': {
     \ 'fugitive': 'FugitiveHead',
     \ 'gitgutter': 'LightLineGitGutter',
-    \ 'vista': 'NearestMethodOrFunction'
+    \ 'vista': 'NearestMethodOrFunction',
+    \ 'metals_status': 'MetalsStatus'
   \ },
   \ 'component_expand': {
     \ 'readonly': 'LightLineReadonly',
@@ -411,6 +418,11 @@ augroup lightline#ale
   autocmd User ALELintPost call lightline#update()
   autocmd User ALEFixPost call lightline#update()
 augroup end
+
+" From https://github.com/scalameta/nvim-metals/discussions/236
+function! MetalsStatus() abort
+  return get(g:, 'metals_status', '')
+endfunction
 ]]
 
 
@@ -462,6 +474,141 @@ vim.cmd [[
 
 
 --:----------------------------------------------------------------------------
+-- LSP
+-------------------------------------------------------------------------------
+-- mostly copied from https://gist.github.com/VonHeikemen/8fc2aa6da030757a5612393d0ae060bd
+vim.api.nvim_create_autocmd('LspAttach', {
+  desc = 'LSP actions',
+  callback = function()
+    local bufmap = function(mode, lhs, rhs)
+      local opts = {buffer = true}
+      vim.keymap.set(mode, lhs, rhs, opts)
+    end
+
+    bufmap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>')
+    bufmap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>')
+    bufmap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>')
+    bufmap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>')
+    bufmap('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>')
+    bufmap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>')
+    bufmap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<cr>')
+    bufmap('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<cr>')
+    bufmap('n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<cr>')
+    bufmap('x', '<leader>cr', '<cmd>lua vim.lsp.buf.range_code_action()<cr>')
+    bufmap('n', 'gl', '<cmd>lua vim.diagnostic.open_float()<cr>')
+    bufmap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<cr>')
+    bufmap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<cr>')
+  end
+})
+
+local sign = function(opts)
+  vim.fn.sign_define(opts.name, {
+    texthl = opts.name,
+    text = opts.text,
+    numhl = ''
+  })
+end
+
+sign({name = 'DiagnosticSignError', text = '✘'})
+sign({name = 'DiagnosticSignWarn', text = '▲'})
+sign({name = 'DiagnosticSignHint', text = '⚑'})
+sign({name = 'DiagnosticSignInfo', text = ''})
+
+vim.diagnostic.config({
+  virtual_text = false,
+  severity_sort = true,
+  float = {
+    border = 'rounded',
+    source = 'always',
+    header = '',
+    prefix = '',
+  },
+})
+
+vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(
+  vim.lsp.handlers.hover,
+  {border = 'rounded'}
+)
+
+vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(
+  vim.lsp.handlers.signature_help,
+  {border = 'rounded'}
+)
+
+require('mason').setup({})
+require('mason-lspconfig').setup({})
+
+local lspconfig = require('lspconfig')
+local lsp_defaults = lspconfig.util.default_config
+
+lsp_defaults.capabilities = vim.tbl_deep_extend(
+  'force',
+  lsp_defaults.capabilities,
+  require('cmp_nvim_lsp').default_capabilities()
+)
+
+-- scala / nvim-metals
+-- from https://github.com/scalameta/nvim-metals/discussions/39
+local metals_config = require("metals").bare_config()
+
+-- Example of settings
+metals_config.settings = {
+  showImplicitArguments = true,
+  excludedPackages = { "akka.actor.typed.javadsl", "com.github.swagger.akka.javadsl" },
+}
+
+-- *READ THIS*
+-- I *highly* recommend setting statusBarProvider to true, however if you do,
+-- you *have* to have a setting to display this in your statusline or else
+-- you'll not see any messages from metals. There is more info in the help
+-- docs about this
+metals_config.init_options.statusBarProvider = "on"
+
+-- Example if you are using cmp how to make sure the correct capabilities for snippets are set
+metals_config.capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+-- Debug settings if you're using nvim-dap
+-- TODO: investigate this
+-- local dap = require("dap")
+
+-- dap.configurations.scala = {
+--   {
+--     type = "scala",
+--     request = "launch",
+--     name = "RunOrTest",
+--     metals = {
+--       runType = "runOrTestFile",
+--       --args = { "firstArg", "secondArg", "thirdArg" }, -- here just as an example
+--     },
+--   },
+--   {
+--     type = "scala",
+--     request = "launch",
+--     name = "Test Target",
+--     metals = {
+--       runType = "testTarget",
+--     },
+--   },
+-- }
+
+-- metals_config.on_attach = function(client, bufnr)
+--   require("metals").setup_dap()
+-- end
+
+-- Autocmd that will actually be in charging of starting the whole thing
+local nvim_metals_group = vim.api.nvim_create_augroup("nvim-metals", { clear = true })
+vim.api.nvim_create_autocmd("FileType", {
+  -- NOTE: You may or may not want java included here. You will need it if you
+  -- want basic Java support but it may also conflict if you are using
+  -- something like nvim-jdtls which also works on a java filetype autocmd.
+  pattern = { "scala", "sbt", "java" },
+  callback = function()
+    require("metals").initialize_or_attach(metals_config)
+  end,
+  group = nvim_metals_group,
+})
+
+--:----------------------------------------------------------------------------
 -- nvim-cmp / autocomplete
 -------------------------------------------------------------------------------
 vim.opt.completeopt = {'menu', 'menuone', 'noselect'}
@@ -493,14 +640,14 @@ cmp.setup({
     ['<C-Space>'] = cmp.mapping.complete(),
     ['<C-e>'] = cmp.mapping.abort(),
     ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-    ["<Tab>"] = cmp.mapping(function(fallback)
+    ["<C-n>"] = cmp.mapping(function(fallback)
 			if cmp.visible() then
 				cmp.select_next_item()
 			else
 				fallback()
 			end
 		end, {"i", "s"}),
-		["<S-Tab>"] = cmp.mapping(function(fallback)
+		["<C-p>"] = cmp.mapping(function(fallback)
 			if cmp.visible() then
 				cmp.select_prev_item()
 			else
@@ -533,3 +680,14 @@ cmp.setup.cmdline(':', {
     { name = 'cmdline' }
   })
 })
+
+-- Set up lspconfig.
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
+-- Replace <YOUR_LSP_SERVER> with each lsp server you've enabled.
+require('lspconfig')['pyright'].setup {
+  capabilities = capabilities
+}
+require('lspconfig')['sumneko_lua'].setup {
+  capabilities = capabilities
+}
+
