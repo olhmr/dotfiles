@@ -445,7 +445,81 @@ vim.cmd [[
 
 
 --:----------------------------------------------------------------------------
--- LSP
+-- Autocomplete - nvim/cmp
+-------------------------------------------------------------------------------
+vim.opt.completeopt = {'menu', 'menuone', 'noselect'}
+-- set up nvim-cmp.
+local cmp = require'cmp'
+local lspkind = require'lspkind'
+cmp.setup({
+  snippet = {
+    expand = function(args)
+      vim.fn["vsnip#anonymous"](args.body)
+    end,
+  },
+  window = {
+    completion = cmp.config.window.bordered(),
+    documentation = cmp.config.window.bordered(),
+  },
+  formatting = {
+    format = lspkind.cmp_format({
+      mode = "text_symbol",
+      menu = ({
+        buffer = "[Buffer]",
+        vsnip = "[vsnip]",
+      })
+    }),
+  },
+  mapping = cmp.mapping.preset.insert({
+    ['<C-u>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-d>'] = cmp.mapping.scroll_docs(4),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-e>'] = cmp.mapping.abort(),
+    ['<CR>'] = cmp.mapping.confirm({ select = false }), -- Only confirm explicitly selected items. Set `select` to `true` to accept currently selected item / the first item.
+    ["<C-n>"] = cmp.mapping(function(fallback)
+			if cmp.visible() then
+				cmp.select_next_item()
+			else
+				fallback()
+			end
+		end, {"i", "s"}),
+		["<C-p>"] = cmp.mapping(function(fallback)
+			if cmp.visible() then
+				cmp.select_prev_item()
+			else
+				fallback()
+			end
+		end, {"i", "s"}),
+  }),
+  sources = cmp.config.sources({
+    { name = 'nvim_lsp' },
+    { name = 'vsnip' },
+  }, {
+    { name = 'buffer' },
+  })
+})
+
+-- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
+cmp.setup.cmdline({ '/', '?' }, {
+  mapping = cmp.mapping.preset.cmdline(),
+  sources = {
+    { name = 'buffer' }
+  }
+})
+
+-- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+cmp.setup.cmdline(':', {
+  mapping = cmp.mapping.preset.cmdline(),
+  sources = cmp.config.sources({
+    { name = 'path' }
+  }, {
+    { name = 'cmdline' }
+  })
+})
+
+
+--:----------------------------------------------------------------------------
+-- LSP - generic
 -------------------------------------------------------------------------------
 -- mostly copied from https://gist.github.com/VonHeikemen/8fc2aa6da030757a5612393d0ae060bd
 vim.api.nvim_create_autocmd('LspAttach', {
@@ -518,7 +592,31 @@ lsp_defaults.capabilities = vim.tbl_deep_extend(
   require('cmp_nvim_lsp').default_capabilities()
 )
 
--- scala / nvim-metals
+
+--:----------------------------------------------------------------------------
+-- LSP - python, lua
+-------------------------------------------------------------------------------
+-- Set up lspconfig.
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
+-- Replace <YOUR_LSP_SERVER> with each lsp server you've enabled.
+require('lspconfig')['pyright'].setup {
+  capabilities = capabilities
+}
+require('lspconfig')['sumneko_lua'].setup {
+  capabilities = capabilities,
+  settings = {
+    Lua = {
+      diagnostics = {
+        globals = { 'vim' }
+      }
+    }
+  }
+}
+
+
+--:----------------------------------------------------------------------------
+-- LSP - scala / nvim-metals
+-------------------------------------------------------------------------------
 -- from https://github.com/scalameta/nvim-metals/discussions/39
 local metals_config = require("metals").bare_config()
 
@@ -577,94 +675,3 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
   group = nvim_metals_group,
 })
-
---:----------------------------------------------------------------------------
--- nvim-cmp / autocomplete
--------------------------------------------------------------------------------
-vim.opt.completeopt = {'menu', 'menuone', 'noselect'}
--- set up nvim-cmp.
-local cmp = require'cmp'
-local lspkind = require'lspkind'
-cmp.setup({
-  snippet = {
-    expand = function(args)
-      vim.fn["vsnip#anonymous"](args.body)
-    end,
-  },
-  window = {
-    completion = cmp.config.window.bordered(),
-    documentation = cmp.config.window.bordered(),
-  },
-  formatting = {
-    format = lspkind.cmp_format({
-      mode = "text_symbol",
-      menu = ({
-        buffer = "[Buffer]",
-        vsnip = "[vsnip]",
-      })
-    }),
-  },
-  mapping = cmp.mapping.preset.insert({
-    ['<C-u>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-d>'] = cmp.mapping.scroll_docs(4),
-    ['<C-Space>'] = cmp.mapping.complete(),
-    ['<C-e>'] = cmp.mapping.abort(),
-    ['<CR>'] = cmp.mapping.confirm({ select = false }), -- Only confirm explicitly selected items. Set `select` to `true` to accept currently selected item / the first item.
-    ["<C-n>"] = cmp.mapping(function(fallback)
-			if cmp.visible() then
-				cmp.select_next_item()
-			else
-				fallback()
-			end
-		end, {"i", "s"}),
-		["<C-p>"] = cmp.mapping(function(fallback)
-			if cmp.visible() then
-				cmp.select_prev_item()
-			else
-				fallback()
-			end
-		end, {"i", "s"}),
-  }),
-  sources = cmp.config.sources({
-    { name = 'nvim_lsp' },
-    { name = 'vsnip' },
-  }, {
-    { name = 'buffer' },
-  })
-})
-
--- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
-cmp.setup.cmdline({ '/', '?' }, {
-  mapping = cmp.mapping.preset.cmdline(),
-  sources = {
-    { name = 'buffer' }
-  }
-})
-
--- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
-cmp.setup.cmdline(':', {
-  mapping = cmp.mapping.preset.cmdline(),
-  sources = cmp.config.sources({
-    { name = 'path' }
-  }, {
-    { name = 'cmdline' }
-  })
-})
-
--- Set up lspconfig.
-local capabilities = require('cmp_nvim_lsp').default_capabilities()
--- Replace <YOUR_LSP_SERVER> with each lsp server you've enabled.
-require('lspconfig')['pyright'].setup {
-  capabilities = capabilities
-}
-require('lspconfig')['sumneko_lua'].setup {
-  capabilities = capabilities,
-  settings = {
-    Lua = {
-      diagnostics = {
-        globals = { 'vim' }
-      }
-    }
-  }
-}
-
