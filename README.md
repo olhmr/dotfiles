@@ -68,3 +68,4 @@ See https://github.com/scalameta/nvim-metals
 - [Alfred](https://www.alfredapp.com/) for better spotlight search
 - [f.lux](https://justgetflux.com/) as a blue-light filter
 - [Clipy](https://github.com/Clipy/Clipy) for clipboard with history
+- [Hammerspoon](https://www.hammerspoon.org/) for when I don't have my external keyboard
