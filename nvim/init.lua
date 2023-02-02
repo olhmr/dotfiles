@@ -115,6 +115,7 @@ vim.keymap.set('n', '<leader>te', ':tabedit <c-r>=expand("%:p:h")<cr>')
 
 -- remap 0 to first non-blank char - use | for other behaviour
 vim.keymap.set('n', '0', '^')
+vim.keymap.set('o', '0', '^')
 
 -- enable line numbers in netrw
 vim.g['netrw_bufsettings'] = 'noma nomod nu rnu nobl nowrap ro'
