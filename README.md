@@ -61,3 +61,10 @@ There are two reasons for not using treesitter:
 #### Scala
 
 See https://github.com/scalameta/nvim-metals
+
+# Other tooling
+
+- [Spectacle](https://github.com/eczarny/spectacle) for multiplexing
+- [Alfred](https://www.alfredapp.com/) for better spotlight search
+- [f.lux](https://justgetflux.com/) as a blue-light filter
+- [Clipy](https://github.com/Clipy/Clipy) for clipboard with history
