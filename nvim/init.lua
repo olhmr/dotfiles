@@ -349,7 +349,7 @@ let g:lightline = {
       \         [ 'absolutepath', 'readonly', 'fugitive', 'modified', 'gitgutter', 'vista' ] ],
     \ 'right': [ [ 'percent', 'lineinfo' ],
       \          [ 'fileformat', 'fileencoding', 'filetype' ],
-      \          [ 'linter_warnings', 'linter_errors', 'linter_ok', 'metals_status' ] ]
+      \          [ 'metals_status' ] ]
   \ },
   \ 'component_function': {
     \ 'fugitive': 'FugitiveHead',
@@ -358,16 +358,10 @@ let g:lightline = {
     \ 'metals_status': 'MetalsStatus'
   \ },
   \ 'component_expand': {
-    \ 'readonly': 'LightLineReadonly',
-    \ 'linter_warnings': 'LightlineLinterWarnings',
-    \ 'linter_errors': 'LightlineLinterErrors',
-    \ 'linter_ok': 'LightlineLinterOK'
+    \ 'readonly': 'LightLineReadonly'
   \ },
   \ 'component_type': {
-    \ 'readonly': 'error',
-    \ 'linter_warnings': 'warning',
-    \ 'linter_errors': 'error',
-    \ 'linter_ok': 'ok'
+    \ 'readonly': 'error'
   \ }
 \ }
 
@@ -395,33 +389,6 @@ function! LightLineGitGutter()
   endfor
   return join(ret, ' ')
 endfunction
-
-" Below three from here: https://github.com/statico/dotfiles/blob/45aa1ba59b275ef72d8e5cc98f8d6aa360518e00/.vim/vimrc#L412
-function! LightlineLinterWarnings() abort
-  let l:counts = ale#statusline#Count(bufnr(''))
-  let l:all_errors = l:counts.error + l:counts.style_error
-  let l:all_non_errors = l:counts.total - l:all_errors
-  return l:counts.total == 0 ? '' : printf('%d ◆', all_non_errors)
-endfunction
-
-function! LightlineLinterErrors() abort
-  let l:counts = ale#statusline#Count(bufnr(''))
-  let l:all_errors = l:counts.error + l:counts.style_error
-  return l:counts.total == 0 ? '' : printf('%d ✗', all_errors)
-endfunction
-
-function! LightlineLinterOK() abort
-  let l:counts = ale#statusline#Count(bufnr(''))
-  return l:counts.total == 0 ? '✓' : ''
-endfunction
-
-" From https://github.com/maximbaz/lightline-ale/blob/master/plugin/lightline/ale.vim
-augroup lightline#ale
-  autocmd!
-  autocmd User ALEJobStarted call lightline#update()
-  autocmd User ALELintPost call lightline#update()
-  autocmd User ALEFixPost call lightline#update()
-augroup end
 
 " From https://github.com/scalameta/nvim-metals/discussions/236
 function! MetalsStatus() abort
