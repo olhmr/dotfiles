@@ -25,11 +25,11 @@ Import the colorscheme from this repo.
 
 In Mac Settings -> Keyboard -> Keyboard Shortcuts -> App Shortcuts, add a shortcut for iTerm called `Close` set to `cmd + shift + w`. This will ensure that `cmd + w` doesn't close tabs or windows.
 
-Download `FantasqueSansMono Nerd Font`: https://www.nerdfonts.com/font-downloads
+Download the patched `Fantasque Sans Mono` nerd font - *not* the one from nerdfonts.com: https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/FantasqueSansMono/Regular/complete/Fantasque%20Sans%20Mono%20Regular%20Nerd%20Font%20Complete.ttf
 
-Unzip and double-click `Fantasque Sans Mono Regular Nerd Font Complete Mono.ttf` to add to Mac.
+Double-click the file to add to Mac.
 
-Change font in iTerm to use new font.
+Change font in iTerm to use new font, and set size to 14.
 
 ## neovim
 Helpful info on neovim config in lua:
