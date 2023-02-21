@@ -2,13 +2,34 @@
 
 Dotfiles for personal use. Current stack:
 
-- zsh with p10k as shell
+- iterm2 as terminal
+- zsh with oh-my-zsh p10k as shell
 - neovim for editing
 - visidata for spreadsheets
 - taskwarrior for task management
 
 # Installation notes
 All for macOS
+
+Install iterm2: https://iterm2.com/
+Install homebrew: https://brew.sh/
+Install zsh: `brew install zsh`
+Install oh-my-zsh: https://ohmyz.sh/#install
+Install zsh-autosuggestions: https://github.com/zsh-users/zsh-autosuggestions/blob/master/INSTALL.md
+Install autojump: `brew install autojump`
+Install pyenv: `brew install pyenv`
+
+## iTerm2
+
+Import the colorscheme from this repo.
+
+In Mac Settings -> Keyboard -> Keyboard Shortcuts -> App Shortcuts, add a shortcut for iTerm called `Close` set to `cmd + shift + w`. This will ensure that `cmd + w` doesn't close tabs or windows.
+
+Download `FantasqueSansMono Nerd Font`: https://www.nerdfonts.com/font-downloads
+
+Unzip and double-click `Fantasque Sans Mono Regular Nerd Font Complete Mono.ttf` to add to Mac.
+
+Change font in iTerm to use new font.
 
 ## neovim
 Helpful info on neovim config in lua:
@@ -21,11 +42,13 @@ Install neovim:
   $ brew install neovim
 ```
 
+Install vim-plug: https://github.com/junegunn/vim-plug
+
 Copy `nvim/` to `~/.config/`
 
 Create `~/.config/nvim/python-env` and navigate there
 
-Install `pyenv`
+Ensure `pyenv` is installed and version 3.9.11 is available (if not: `pyenv install 3.9.11`)
 
 Run:
 ```
@@ -47,10 +70,8 @@ There are two reasons for not using treesitter:
 #### Lua
 
 ```
-  $ brew install lua-language-server
+  :MasonInstall lua-language-server
 ```
-
-(Can also be installed via Mason)
 
 #### Python
 
@@ -65,7 +86,7 @@ See https://github.com/scalameta/nvim-metals
 # Other tooling
 
 - [Spectacle](https://github.com/eczarny/spectacle) for multiplexing
-- [Alfred](https://www.alfredapp.com/) for better spotlight search
+- [Raycast](https://www.alfredapp.com/) for better spotlight search
+  Add `cmd + shift + v` as a shortcut for the `Clipboard History` extension
 - [f.lux](https://justgetflux.com/) as a blue-light filter
-- [Clipy](https://github.com/Clipy/Clipy) for clipboard with history
 - [Hammerspoon](https://www.hammerspoon.org/) for when I don't have my external keyboard
