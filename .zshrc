@@ -169,6 +169,10 @@ function ff() { # search inside files and open in vim - https://www.reddit.com/r
 # git and github                                                              #
 #-----------------------------------------------------------------------------#
 alias glb='git branch -a | grep -v remote'
+alias ghst='gh status'
+alias ghprs='gh search prs --state=open --author=@me'
+alias ghreviews='gh search prs --state=open --review-requested=@me'
+alias glodag='git log --oneline --decorate --all --graph'
 
 
 #-:---------------------------------------------------------------------------#
