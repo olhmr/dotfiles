@@ -128,6 +128,10 @@ vim.g['netrw_altfile'] = 1
 
 vim.opt.showtabline = 2 -- always show tabline
 
+-- allow this to work as expected while I troubleshoot why the caps rebind to
+-- control isn't working as expected
+vim.keymap.set('i', '<Home>', '<c-[>')
+
 
 --:----------------------------------------------------------------------------
 -- Miscellaneous
