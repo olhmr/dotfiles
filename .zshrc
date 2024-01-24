@@ -97,6 +97,10 @@ if [ -f '/Users/olle.hammarstrom/google-cloud-sdk/path.zsh.inc' ]; then . '/User
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/olle.hammarstrom/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/olle.hammarstrom/google-cloud-sdk/completion.zsh.inc'; fi
 
+# have kubectl use the new binary plugin for authentication instead of using the default provider-specific code
+export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+
+
 
 #-:---------------------------------------------------------------------------#
 # plugins                                                                     #
