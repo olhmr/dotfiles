@@ -1,0 +1,9 @@
+{
+  "checkbox item": {
+    "prefix": ["todo", "[ ]", "checkbox"],
+    "body": [
+      "[ ] ${1:item}"
+    ],
+    "description": "Create new item with checkbox"
+  }
+}
