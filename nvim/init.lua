@@ -204,6 +204,7 @@ Plug 'williamboman/mason.nvim' -- lsp install
 Plug 'williamboman/mason-lspconfig.nvim' -- lsp install
 Plug 'scalameta/nvim-metals' -- scala LSP
 Plug 'mfussenegger/nvim-dap' -- scala debugging
+Plug 'towolf/vim-helm' -- helm LSP, required on top of mason
   -- end LSP-specific config
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-path'
@@ -215,6 +216,7 @@ Plug 'onsails/lspkind.nvim' -- icons
 -- end autocomplete with nvim-cmp and vim-vsnip
 Plug 'lepture/vim-jinja' -- for dbt syntax to work
 Plug 'kshenoy/vim-signature' -- handling marks
+Plug 'hashivim/vim-terraform' -- terraform syntax highlight + commands
 
 vim.call('plug#end')
 
@@ -603,7 +605,7 @@ lsp_defaults.capabilities = vim.tbl_deep_extend(
 
 
 --:----------------------------------------------------------------------------
--- LSP - python, lua
+-- LSP - python, lua, golang, terraform
 -------------------------------------------------------------------------------
 -- Set up lspconfig.
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
@@ -611,7 +613,7 @@ local capabilities = require('cmp_nvim_lsp').default_capabilities()
 require('lspconfig')['pyright'].setup {
   capabilities = capabilities
 }
-require('lspconfig')['sumneko_lua'].setup {
+require('lspconfig')['lua_ls'].setup {
   capabilities = capabilities,
   settings = {
     Lua = {
@@ -620,6 +622,16 @@ require('lspconfig')['sumneko_lua'].setup {
       }
     }
   }
+}
+require('lspconfig')['gopls'].setup {
+  capabilities = capabilities
+
+}
+require('lspconfig')['terraformls'].setup {
+  capabilities = capabilities
+}
+require('lspconfig')['helm_ls'].setup {
+  capabilities = capabilities
 }
 
 
