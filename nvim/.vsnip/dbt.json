@@ -29,6 +29,15 @@
     ],
     "description": "Create a dbt macro"
   },
+  "macro without whitespace": {
+    "prefix": "macrow",
+    "body": [
+      "{%- macro ${1:macro_name}(${2:args}) -%}",
+      "  ${3:body}",
+      "{%- endmacro -%}"
+    ],
+    "description": "Create a dbt macro"
+  },
   "config block": {
     "prefix": ["config"],
     "body": [
@@ -52,5 +61,29 @@
       "}}"
     ],
     "description": "Create a dbt config with core fields"
+  },
+  "qualify row number": {
+    "prefix": ["qualify"],
+    "body": [
+      "qualify",
+      "  row_number() over (",
+      "  partition by",
+      "    ${1:dimension}",
+      "  order by",
+      "    ${2:field}",
+      ") = 1"
+    ]
+  },
+  "macro clause": {
+    "prefix": ["{%", "clause"],
+    "body": [
+      "{% ${0:clause} %}"
+    ]
+  },
+  "macro clause without whitespace": {
+    "prefix": ["{%-", "clausew"],
+    "body": [
+      "{%- ${0:clause} -%}"
+    ]
   }
 }
