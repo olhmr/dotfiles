@@ -168,6 +168,9 @@ vim.cmd [[
   au BufNewFile,BufRead *.sql set ft=dbt
   autocmd FileType sql setlocal commentstring=/*%s*/
 ]]
+-- disable sql drilldown keymap replacing arrow keys in sql files
+-- see https://superuser.com/questions/139620/lost-left-right-cursor-keys-in-vim-insert-mode
+vim.g['omni_sql_no_default_maps'] = 1
 
 
 --:============================================================================
