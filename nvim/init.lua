@@ -217,6 +217,7 @@ Plug 'onsails/lspkind.nvim' -- icons
 Plug 'lepture/vim-jinja' -- for dbt syntax to work
 Plug 'kshenoy/vim-signature' -- handling marks
 Plug 'hashivim/vim-terraform' -- terraform syntax highlight + commands
+Plug 'lukas-reineke/indent-blankline.nvim' -- indentation guides
 
 vim.call('plug#end')
 
@@ -453,6 +454,12 @@ vim.cmd [[
   imap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
   smap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
 ]]
+
+
+--:----------------------------------------------------------------------------
+-- indent-blankline
+-------------------------------------------------------------------------------
+require("ibl").setup {}
 
 
 --:----------------------------------------------------------------------------
@@ -696,3 +703,5 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
   group = nvim_metals_group,
 })
+
+
