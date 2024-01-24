@@ -321,6 +321,10 @@ vim.keymap.set('n', '<leader>sl', ':TREPLSendLine<CR>')
 vim.keymap.set('v', '<leader>sl', ':TREPLSendSelection<CR>')
 
 
+-- don't print shift-space escape sequence in terminal mode, just print space
+vim.keymap.set('t', '<s-space>', '<space>')
+
+
 --:----------------------------------------------------------------------------
 -- gitgutter
 -------------------------------------------------------------------------------
