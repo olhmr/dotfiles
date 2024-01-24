@@ -219,7 +219,7 @@ Plug 'kshenoy/vim-signature' -- handling marks
 Plug 'hashivim/vim-terraform' -- terraform syntax highlight + commands
 Plug 'lukas-reineke/indent-blankline.nvim' -- indentation guides
 
-vim.call('plug#end')
+vim.call'plug#end'
 
 
 --:----------------------------------------------------------------------------
