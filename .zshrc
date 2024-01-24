@@ -19,6 +19,9 @@ export ZSH="/Users/olle.hammarstrom/.oh-my-zsh"
 export LC_CTYPE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
+# tfenv for M1
+export TFENV_ARCH=amd64
+
 # Enable powerlevel10k
 source ~/powerlevel10k/powerlevel10k.zsh-theme
 
