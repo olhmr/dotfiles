@@ -218,6 +218,7 @@ Plug 'lepture/vim-jinja' -- for dbt syntax to work
 Plug 'kshenoy/vim-signature' -- handling marks
 Plug 'hashivim/vim-terraform' -- terraform syntax highlight + commands
 Plug 'lukas-reineke/indent-blankline.nvim' -- indentation guides
+Plug 'github/copilot.vim'
 
 vim.call'plug#end'
 
@@ -709,3 +710,19 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 
+--:----------------------------------------------------------------------------
+-- github copilot
+-------------------------------------------------------------------------------
+-- by default copilot uses M in the mappings, which doesn't work well on mac
+-- we also override the dismiss so that we can have more sensible mappings for
+-- next/previous, as that uses <M-]> by default
+vim.keymap.set('i', '<C-=>', '<Plug>(copilot-dismiss)')
+vim.keymap.set('i', '<C-+>', '<Plug>(copilot-next)')
+vim.keymap.set('i', '<C-_>', '<Plug>(copilot-previous)')
+
+-- using the right arrow to complete feels more natural since we have ghost
+-- text, although leaving the tab for now to see which I prefer
+vim.cmd [[
+  imap <silent><script><expr> <Right> copilot#Accept("")
+]]
+  -- let g:copilot_no_tab_map = v:true
