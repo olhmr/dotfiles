@@ -60,15 +60,20 @@ skip_global_compinit=1
 # Add pyenv executable to PATH and
 # enable shims by adding the following
 # to ~/.profile and ~/.zprofile:
+#
+# Only do it if starting a top-level shell
+# See https://www.reddit.com/r/neovim/comments/ga0s7w/use_python_venv_with_neovim/
 
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init --path)"
+if [ "$SHLVL" = 1 ]; then
+  export PYENV_ROOT="$HOME/.pyenv"
+  export PATH="$PYENV_ROOT/bin:$PATH"
+  eval "$(pyenv init --path)"
+  # Load pyenv into the shell by adding
+  # the following to ~/.zshrc:
 
-# Load pyenv into the shell by adding
-# the following to ~/.zshrc:
+  eval "$(pyenv init -)"
+fi
 
-eval "$(pyenv init -)"
 
 # Add flags from https://stackoverflow.com/questions/66482346/problems-installing-python-3-6-with-pyenv-on-mac-os-big-sur
 export LDFLAGS="-L/usr/local/opt/zlib/lib -L/usr/local/opt/bzip2/lib"
@@ -78,13 +83,9 @@ export CPPFLAGS="-I/usr/local/opt/zlib/include -I/usr/local/opt/bzip2/include"
 #-:---------------------------------------------------------------------------#
 # poetry                                                                      #
 #-----------------------------------------------------------------------------#
-export PATH="$HOME/.poetry/bin:$PATH"
-
-
-#-:---------------------------------------------------------------------------#
-# openvpn                                                                     #
-#-----------------------------------------------------------------------------#
-export PATH=$(brew --prefix openvpn)/sbin:$PATH
+if [ "$SHLVL" = 1 ]; then
+  export PATH="$HOME/.local/bin:$PATH"
+fi
 
 
 #-:---------------------------------------------------------------------------#
