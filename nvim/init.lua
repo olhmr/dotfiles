@@ -44,6 +44,8 @@ vim.opt.tm = 500 -- how long to wait for command input
 vim.opt.number = true -- enable line numbers
 vim.opt.relativenumber = true -- combined with number, enables hybdrid
 vim.opt.signcolumn = 'yes' -- always show signcolumn
+vim.opt.listchars = "tab:> ,trail:-,nbsp:+,space:·,multispace:|···,eol:↴"
+vim.opt.list = true -- show the above
 
 
 --:----------------------------------------------------------------------------
