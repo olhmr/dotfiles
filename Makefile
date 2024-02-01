@@ -18,6 +18,8 @@ install-python: update-installs
 	python3 -m pipx ensurepath
 	sudo apt install python3.10-venv -y
 	pipx install poetry
+	curl https://pyenv.run | bash
+	@echo "Make sure to follow pyenv instructions to modify .zshrc"
 
 install-zsh: update-installs
 	sudo apt install zsh -y
