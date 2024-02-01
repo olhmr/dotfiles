@@ -14,6 +14,10 @@ fix-curl: update-installs
 
 install-python: update-installs
 	sudo apt install python3.11 -y
+	python3 -m pip install --user pipx
+	python3 -m pipx ensurepath
+	sudo apt install python3.10-venv -y
+	pipx install poetry
 
 install-zsh: update-installs
 	sudo apt install zsh -y
