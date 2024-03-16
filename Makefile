@@ -28,6 +28,7 @@ install-zsh: update-installs
 	@echo "Installing extensions"
 	git clone https://github.com/zsh-users/zsh-autosuggestions ${HOME}/.oh-my-zsh/custom/plugins/zsh-autosuggestions
 	sudo apt install autojump -y
+	cp .zshrc ${HOME}/
 
 install-font: fix-curl
 	curl -LJO https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/FantasqueSansMono/Regular/FantasqueSansMNerdFontMono-Regular.ttf
