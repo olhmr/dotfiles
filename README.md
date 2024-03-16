@@ -107,3 +107,7 @@ See https://github.com/scalameta/nvim-metals
 - [Raycast](https://www.alfredapp.com/) for better spotlight search
   Add `cmd + shift + v` as a shortcut for the `Clipboard History` extension
 - [f.lux](https://justgetflux.com/) as a blue-light filter
+- tmux:
+    - https://github.com/tmux-plugins/tpm
+    - https://github.com/thoreinstein/gruvbox-tmux
+    - https://unix.stackexchange.com/a/555969 - if vim freezes
