@@ -15,6 +15,9 @@ fi
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
+# p10k theme installed via oh-my-zsh
+export ZSH_THEME="powerlevel10k/powerlevel10k"
+
 # Encodings
 export LC_CTYPE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
