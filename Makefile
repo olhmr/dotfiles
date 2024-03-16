@@ -26,7 +26,7 @@ install-zsh: update-installs
 	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 	touch .zshrc_private
 	@echo "Installing extensions"
-	git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+	git clone https://github.com/zsh-users/zsh-autosuggestions ${HOME}/.oh-my-zsh/custom/plugins/zsh-autosuggestions
 	sudo apt install autojump -y
 
 install-font: fix-curl
@@ -37,14 +37,15 @@ install-font: fix-curl
 	@echo "If you notice that icons are not the right size you may need to install a different version of the font."
 
 install-p10k:
-	git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
-	cp .p10k.zsh $HOME/
+	git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${HOME}/.oh-my-zsh/custom/themes/powerlevel10k
+	cp .p10k.zsh ${HOME}/
 
 install-nvim:
 	# snap has a later version than apt
 	sudo snap install nvim --classic
 	@echo "Installing vim-plug"
-	sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+	sh -c 'curl -fLo ${HOME}/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+	cp -r nvim ${HOME}/.config/
 
 install-fzf:
 	sudo apt install fzf
