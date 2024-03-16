@@ -13,7 +13,7 @@ fi
 # initial                                                                     #
 #-----------------------------------------------------------------------------#
 # Path to your oh-my-zsh installation.
-export ZSH="/Users/olle.hammarstrom/.oh-my-zsh"
+export ZSH="/$HOME/.oh-my-zsh"
 
 # Encodings
 export LC_CTYPE=en_US.UTF-8
@@ -21,9 +21,6 @@ export LC_ALL=en_US.UTF-8
 
 # tfenv for M1
 export TFENV_ARCH=amd64
-
-# Enable powerlevel10k
-source ~/powerlevel10k/powerlevel10k.zsh-theme
 
 # Case-sensitive completion must be off. _ and - will be interchangeable.
 HYPHEN_INSENSITIVE="true"
@@ -126,13 +123,6 @@ plugins=(
 #-----------------------------------------------------------------------------#
 # Preferred editor
 export EDITOR='nvim'
-
-
-#-:---------------------------------------------------------------------------#
-# java                                                                        #
-#-----------------------------------------------------------------------------#
-# Use Java 11: https://medium.com/w-logs/installing-java-11-on-macos-with-homebrew-7f73c1e9fadf
-export JAVA_HOME=$(/usr/libexec/java_home -v11)
 
 
 #-:---------------------------------------------------------------------------#
