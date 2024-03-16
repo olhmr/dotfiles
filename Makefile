@@ -13,12 +13,11 @@ fix-curl: update-installs
 	sudo apt install curl
 
 install-python: update-installs
-	# install a global python version for general usage
-	sudo apt install python3.11 -y
+	sudo apt install python3-pip -y
 	python3 -m pip install --user pipx
-	python3 -m pipx ensurepath
 	sudo apt install python3.10-venv -y
-	pipx install poetry
+	python3 -m pipx ensurepath
+	python3 -m pipx install poetry
 	curl https://pyenv.run | bash # manage different python version for different projects
 	@echo "Make sure to follow pyenv instructions to modify .zshrc"
 
