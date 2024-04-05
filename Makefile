@@ -12,20 +12,27 @@ fix-curl: update-installs
 	sudo snap remove curl
 	sudo apt install curl
 
-install-python: update-installs
+install-python: update-installs fix-curl
+	# install a global python version for general usage
+	sudo apt install python3.11 -y
 	sudo apt install python3-pip -y
 	python3 -m pip install --user pipx
-	sudo apt install python3.10-venv -y
-	python3 -m pipx ensurepath
-	python3 -m pipx install poetry
+	sudo apt install python3.11-venv -y
+	@echo "Did you see an error because pipx is missing? Restart the shell and try again."
+	pipx install poetry
 	curl https://pyenv.run | bash # manage different python version for different projects
 	@echo "Make sure to follow pyenv instructions to modify .zshrc"
 
-install-zsh: update-installs
-	sudo apt install zsh -y
-	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+install-zsh: update-installs fix-curl
+	cp .zshrc ${HOME}/.zshrc
 	touch .zshrc_private
-	@echo "Installing extensions"
+	sudo apt install zsh -y
+	curl -LJO https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+	chmod +x install.sh
+	./install.sh
+	rm install.sh
+
+install-zsh-extensions:
 	git clone https://github.com/zsh-users/zsh-autosuggestions ${HOME}/.oh-my-zsh/custom/plugins/zsh-autosuggestions
 	sudo apt install autojump -y
 	cp .zshrc ${HOME}/
@@ -41,7 +48,7 @@ install-p10k:
 	git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${HOME}/.oh-my-zsh/custom/themes/powerlevel10k
 	cp .p10k.zsh ${HOME}/
 
-install-nvim:
+install-nvim: fix-curl
 	# snap has a later version than apt
 	sudo snap install nvim --classic
 	@echo "Installing vim-plug"
@@ -60,4 +67,5 @@ nvim-info:
 	@echo "Open neovim - it will error because we haven't installed the colorscheme yet"
 	@echo "Run :PlugInstall, then restart neovim"
 
-ubuntu: preamble update-installs fix-curl install-python install-zsh install-font install-p10k install-nvim install-fzf install-visidata nvim-info
+ubuntu:
+	@echo "Haven't worked out how to do this in a reliable way yet, as some stages requires restarts. In the meantime, run the make targets manually from top to bottom".
