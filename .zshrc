@@ -138,6 +138,8 @@ export EDITOR='nvim'
 # FZF                                                                         #
 #-----------------------------------------------------------------------------#
 export FZF_DEFAULT_COMMAND='rg --files --hidden' # faster than the default
+source <(fzf --zsh) # add fzf features for zsh
+# TODO: this doesn't seem to work with oh-my-zsh, look into it
 
 
 #=:===========================================================================#
