@@ -2,12 +2,11 @@
   "logging": {
     "prefix": ["logging", "logger"],
     "body": [
-      "#Instantiate logger",
       "logging.basicConfig(",
-      "  format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',",
+      "    format=\"%(asctime)s - %(name)s - %(levelname)s - %(message)s\",",
+      "    level=os.getenv(\"LOGLEVEL\", \"INFO\").upper()",
       ")",
-      "logger = logging.getLogger()",
-      "logger.setLevel(level=os.getenv('LOGLEVEL', 'INFO').upper())"
+      "logger = logging.getLogger()"
     ]
   }
 }
