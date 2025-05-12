@@ -219,6 +219,7 @@ Plug 'kshenoy/vim-signature' -- handling marks
 Plug 'hashivim/vim-terraform' -- terraform syntax highlight + commands
 Plug 'lukas-reineke/indent-blankline.nvim' -- indentation guides
 Plug 'vimwiki/vimwiki' -- personal knowledge management
+Plug 'rust-lang/rust.vim'
 Plug 'github/copilot.vim'
 
 vim.call'plug#end'
