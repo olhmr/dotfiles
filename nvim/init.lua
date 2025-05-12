@@ -603,6 +603,8 @@ vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(
   {border = 'rounded'}
 )
 
+vim.opt.winborder = 'single'
+
 require('mason').setup({})
 require('mason-lspconfig').setup({})
 
