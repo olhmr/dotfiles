@@ -22,8 +22,8 @@ export ZSH_THEME="powerlevel10k/powerlevel10k"
 export LC_CTYPE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-# tfenv for M1
-export TFENV_ARCH=amd64
+# tfenv for Apple Silicon
+export TFENV_ARCH=arm64
 
 # Case-sensitive completion must be off. _ and - will be interchangeable.
 HYPHEN_INSENSITIVE="true"
