@@ -140,6 +140,10 @@ vim.keymap.set('i', '<Home>', '<c-[>')
 vim.keymap.set('n', '<leader>cs', ':let @*=expand("%:t")<CR>')
 vim.keymap.set('n', '<leader>cl', ':let @*=expand("%:p")<CR>')
 
+-- open path in github, assuming vim was opened from the project root
+-- requires the gh cli
+vim.keymap.set('n', '<leader><s-g>', ':execute "!gh browse" expand("%") "-b" system("git rev-parse --abbrev-ref HEAD")<CR>')
+
 -- switch current working directory to open buffer
 vim.keymap.set('n', '<leader>cd', ':cd %:p:h<cr>:pwd<cr>')
 
