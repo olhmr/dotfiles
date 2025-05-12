@@ -31,6 +31,12 @@ HYPHEN_INSENSITIVE="true"
 # Display red dots whilst waiting for completion.
 COMPLETION_WAITING_DOTS="true"
 
+# Ensure history is saved between sessions
+HISTFILE=~/.zsh_history
+HISTSIZE=10000
+SAVEHIST=10000
+setopt appendhistory
+
 
 #-:---------------------------------------------------------------------------#
 # startup optimisation                                                        #
