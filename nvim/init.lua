@@ -233,6 +233,7 @@ Plug 'lukas-reineke/indent-blankline.nvim' -- indentation guides
 Plug 'vimwiki/vimwiki' -- personal knowledge management
 Plug 'rust-lang/rust.vim'
 Plug 'github/copilot.vim'
+Plug 'CopilotC-Nvim/CopilotChat.nvim'
 
 vim.call'plug#end'
 
@@ -749,4 +750,12 @@ vim.keymap.set('i', '<C-_>', '<Plug>(copilot-previous)')
 vim.cmd [[
   imap <silent><script><expr> <Right> copilot#Accept("")
 ]]
-  -- let g:copilot_no_tab_map = v:true
+vim.g.copilot_no_tab_map = true
+
+-- chat functionality
+require("CopilotChat").setup {
+  model = "claude-3.7-sonnet-thought"
+}
+vim.keymap.set('n', '<leader>cc', ':CopilotChatToggle<CR>')
+vim.keymap.set('n', '<leader>cp', ':CopilotChatPrompts<CR>')
+vim.keymap.set('v', '<leader>cm', ':CopilotChat<CR>')
