@@ -635,34 +635,11 @@ lsp_defaults.capabilities = vim.tbl_deep_extend(
 
 
 --:----------------------------------------------------------------------------
--- LSP - python, lua, golang, terraform
+-- LSP - python, lua, golang, terraform, bash, rust
 -------------------------------------------------------------------------------
 -- Set up lspconfig.
-local capabilities = require('cmp_nvim_lsp').default_capabilities()
--- Replace <YOUR_LSP_SERVER> with each lsp server you've enabled.
-require('lspconfig')['pyright'].setup {
-  capabilities = capabilities
-}
-require('lspconfig')['lua_ls'].setup {
-  capabilities = capabilities,
-  settings = {
-    Lua = {
-      diagnostics = {
-        globals = { 'vim' }
-      }
-    }
-  }
-}
-require('lspconfig')['gopls'].setup {
-  capabilities = capabilities
+-- this is handled by mason-lspconfig
 
-}
-require('lspconfig')['terraformls'].setup {
-  capabilities = capabilities
-}
-require('lspconfig')['helm_ls'].setup {
-  capabilities = capabilities
-}
 
 --:----------------------------------------------------------------------------
 -- LSP - scala / nvim-metals
