@@ -77,13 +77,27 @@
   "macro clause": {
     "prefix": ["{%", "clause"],
     "body": [
-      "{% ${0:clause} %}"
+      "{% ${1:clause} %}"
     ]
   },
   "macro clause without whitespace": {
     "prefix": ["{%-", "clausew"],
     "body": [
-      "{%- ${0:clause} -%}"
+      "{%- ${1:clause} -%}"
+    ]
+  },
+  "set clause": {
+    "prefix": ["{% set", "{%- set", "set"],
+    "body": [
+      "{%- set ${1:var} = ${2:value} -%}"
+    ]
+  },
+  "if clause": {
+    "prefix": ["{% if", "{%- if", "if"],
+    "body": [
+      "{%- if ${1:cond} -%}",
+      "  ${2:clause}",
+      "{%- endif -%}"
     ]
   }
 }
