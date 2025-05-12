@@ -201,7 +201,7 @@ Plug('nvim-telescope/telescope-fzf-native.nvim', { ['do'] = 'make' })
 Plug 'neovim/nvim-lspconfig'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'williamboman/mason.nvim' -- lsp install
-Plug 'williamboman/mason-lspconfig.nvim' -- lsp install
+Plug 'williamboman/mason-lspconfig.nvim' -- links mason to lspconfig
 Plug 'scalameta/nvim-metals' -- scala LSP
 Plug 'mfussenegger/nvim-dap' -- scala debugging
 Plug 'towolf/vim-helm' -- helm LSP, required on top of mason
