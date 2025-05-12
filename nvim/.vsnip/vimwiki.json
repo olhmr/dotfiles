@@ -1,0 +1,13 @@
+{
+  "star": {
+    "prefix": ["star", "brag"],
+    "body": [
+      "Title: ${1:title}",
+      "  Situation: ${2:situation}",
+      "  Task: ${3:task}",
+      "  Action: ${4:action}",
+      "  Result: ${5:result}"
+    ],
+    "description": "Add a new STAR-style entry"
+  }
+}
