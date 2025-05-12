@@ -218,6 +218,7 @@ Plug 'lepture/vim-jinja' -- for dbt syntax to work
 Plug 'kshenoy/vim-signature' -- handling marks
 Plug 'hashivim/vim-terraform' -- terraform syntax highlight + commands
 Plug 'lukas-reineke/indent-blankline.nvim' -- indentation guides
+Plug 'vimwiki/vimwiki' -- personal knowledge management
 Plug 'github/copilot.vim'
 
 vim.call'plug#end'
@@ -709,6 +710,15 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
   group = nvim_metals_group,
 })
+
+
+--:----------------------------------------------------------------------------
+-- vim-wiki
+-------------------------------------------------------------------------------
+vim.g.vimwiki_list = {{path = '~/workspace/trustly-wiki', syntax = 'markdown', ext = '.md'}}
+vim.g.vimwiki_global_ext = 0
+vim.keymap.set('i', '<c-tab>', '<Plug>VimwikiTableNextCell')
+vim.keymap.set('i', '<a-tab>', '<Plug>VimwikiTablePrevCell')
 
 
 --:----------------------------------------------------------------------------
