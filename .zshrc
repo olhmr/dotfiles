@@ -295,3 +295,9 @@ source ~/workspace/dotfiles/.zshrc_private
 # oh-my-zsh                                                                   #
 #-----------------------------------------------------------------------------#
 source $ZSH/oh-my-zsh.sh
+
+# TODO
+export GPG_TTY="$(tty)"
+export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+gpgconf --launch gpg-agent
+alias gpg_restart='gpg-connect-agent updatestartuptty /bye'
