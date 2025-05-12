@@ -245,6 +245,18 @@ function trd() {
   task ready
 }
 
+#-:---------------------------------------------------------------------------#
+# keyboard maps                                                               #
+#-----------------------------------------------------------------------------#
+function ukm() {
+  if [[ $* == *--reset* ]]
+    then hidutil property --set '{"UserKeyMapping":[]}'
+  elif [[ $* == *--swap-tilde* ]]
+    # https://apple.stackexchange.com/questions/329085/tilde-and-plus-minus-%C2%B1-in-wrong-place-on-keyboard
+    then sudo hidutil property --set '{"UserKeyMapping":[ {"HIDKeyboardModifierMappingSrc":0x700000035,"HIDKeyboardModifierMappingDst":0x700000064}, {"HIDKeyboardModifierMappingSrc":0x700000064,"HIDKeyboardModifierMappingDst":0x700000035} ]}'
+  fi
+}
+
 #=:===========================================================================#
 # additional                                                                  #
 #=============================================================================#
