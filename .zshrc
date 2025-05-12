@@ -257,6 +257,19 @@ function ukm() {
   fi
 }
 
+#-:---------------------------------------------------------------------------#
+# python                                                                      #
+#-----------------------------------------------------------------------------#
+function pydev() {
+  if [[ $* == *--poetry* ]]
+    then poetry add --group dev ipython pdbpp black flake8 isort mypy
+  elif [[ $* == *--pip* ]]
+    then pip install ipython pdbpp black flake8 isort mypy
+  else
+      echo "Invalid args"
+  fi
+}
+
 #=:===========================================================================#
 # additional                                                                  #
 #=============================================================================#
