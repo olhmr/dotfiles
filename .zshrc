@@ -8,6 +8,10 @@ fi
 #=:===========================================================================#
 # basic                                                                       #
 #=:===========================================================================#
+# Make it less likely that we accidentally overwrite files with redirect, copy, or move
+set -o noclobber
+alias cp='cp -i'
+alias mv='mv -i'
 
 #-:---------------------------------------------------------------------------#
 # initial                                                                     #
