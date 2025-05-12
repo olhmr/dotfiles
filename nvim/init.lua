@@ -245,6 +245,7 @@ vim.g['gruvbox_material_visual'] = 'reverse' -- visual line selection
 vim.g['gruvbox_material_better_performance'] = 1
 vim.g['gruvbox_material_disable_italic_comment'] = 1
 vim.g['gruvbox_material_enable_bold'] = 1
+vim.g['gruvbox_material_foreground'] = 'material'
 
 -- add highlightgroups for nvim-cmp completion
 vim.cmd [[
