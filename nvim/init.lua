@@ -453,7 +453,7 @@ require('telescope').setup{
     grep_previewer = require'telescope.previewers'.vim_buffer_vimgrep.new,
     mappings = {
       i = {
-        ['<c-p>'] = require('telescope.actions.layout').toggle_preview
+        ['<c-o>'] = require('telescope.actions.layout').toggle_preview
       },
     },
   }
