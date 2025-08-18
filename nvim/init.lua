@@ -667,7 +667,7 @@ vim.g.copilot_no_tab_map = true
 
 -- chat functionality
 require("CopilotChat").setup {
-  model = "claude-3.7-sonnet-thought"
+  model = "claude-sonnet-4"
 }
 vim.keymap.set('n', '<leader>cc', ':CopilotChatToggle<CR>')
 vim.keymap.set('n', '<leader>cp', ':CopilotChatPrompts<CR>')
