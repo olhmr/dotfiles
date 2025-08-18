@@ -434,6 +434,7 @@ vim.keymap.set('n', '<c-f>', function() builtin.find_files({ hidden = true }) en
 vim.keymap.set('n', '<leader>g', builtin.live_grep, {}) -- find inside files
 vim.keymap.set('n', '<leader>fh', function() builtin.oldfiles({ only_cwd = true }) end, {}) -- find recent files
 vim.keymap.set('n', '<leader>fc', builtin.git_bcommits, {}) -- find commits in current file with diffs
+vim.keymap.set('n', '<leader><s-t>', ':Telescope<CR>') -- open telescope
 
 -- inspiration: https://www.reddit.com/r/neovim/comments/w4qsju/toggle_preview_in_telescope/
 require('telescope').setup{
