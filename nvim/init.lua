@@ -633,10 +633,7 @@ lsp_defaults.capabilities = vim.tbl_deep_extend(
 --:----------------------------------------------------------------------------
 -- LSP - python, lua, golang, terraform, bash, rust
 -------------------------------------------------------------------------------
--- Set up lspconfig.
--- this is handled by mason-lspconfig
-
-
+-- lspconfig setup for these languages are handled by mason-lspconfig
 
 
 --:----------------------------------------------------------------------------
