@@ -5,6 +5,7 @@
 --:----------------------------------------------------------------------------
 -- Startup optimisation
 -------------------------------------------------------------------------------
+-- NB: run `python -m venv python-env` in ~/.config/nvim to create the virtual environment
 vim.g['python3_host_prog'] = '~/.config/nvim/python-env/env/bin/python3'
 vim.g['loaded_ruby_provider'] = 0
 vim.g['loaded_node_provider'] = 0
