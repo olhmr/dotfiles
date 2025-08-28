@@ -8,10 +8,6 @@ fi
 #=:===========================================================================#
 # basic                                                                       #
 #=:===========================================================================#
-# Make it less likely that we accidentally overwrite files with redirect, copy, or move
-set -o noclobber
-alias cp='cp -i'
-alias mv='mv -i'
 
 #-:---------------------------------------------------------------------------#
 # initial                                                                     #
@@ -101,12 +97,6 @@ fi
 #-:---------------------------------------------------------------------------#
 # google cloud sdk                                                            #
 #-----------------------------------------------------------------------------#
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/olle.hammarstrom/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/olle.hammarstrom/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/olle.hammarstrom/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/olle.hammarstrom/google-cloud-sdk/completion.zsh.inc'; fi
-
 # have kubectl use the new binary plugin for authentication instead of using the default provider-specific code
 export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 
@@ -301,3 +291,15 @@ export GPG_TTY="$(tty)"
 export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
 gpgconf --launch gpg-agent
 alias gpg_restart='gpg-connect-agent updatestartuptty /bye'
+
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/ollehammarstrom/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/ollehammarstrom/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/ollehammarstrom/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/ollehammarstrom/google-cloud-sdk/completion.zsh.inc'; fi
+
+# Make it less likely that we accidentally overwrite files with redirect, copy, or move
+set -o noclobber
+alias cp='cp -i'
+alias mv='mv -i'
