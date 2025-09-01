@@ -43,7 +43,11 @@ Import the colorscheme from this repo.
 
 In Mac Settings -> Keyboard -> Keyboard Shortcuts -> App Shortcuts, add a shortcut for iTerm called `Close` set to `cmd + shift + w`. This will ensure that `cmd + w` doesn't close tabs or windows.
 
-Download the patched `Fantasque Sans Mono` nerd font - *not* the one from nerdfonts.com: https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/FantasqueSansMono/Regular/complete/Fantasque%20Sans%20Mono%20Regular%20Nerd%20Font%20Complete.ttf
+Download the patched `Fantasque Sans Mono` nerd font - *not* the one from nerdfonts.com. You need two fonts:
+1. https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/FantasqueSansMono/Regular/FantasqueSansMNerdFontMono-Regular.ttf - this is the general font
+2. https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/FantasqueSansMono/Regular/FantasqueSansMNerdFont-Regular.ttf - this is for icons
+
+We use the second font for non-ASCII characters in iTerm as otherwise the icons become very small.
 
 Double-click the file to add to Mac.
 
