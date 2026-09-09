@@ -1,3 +1,4 @@
+fpath=(/Users/olle.hammarstrom/.local/share/zsh/site-functions $fpath)
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -99,6 +100,25 @@ fi
 #-----------------------------------------------------------------------------#
 # have kubectl use the new binary plugin for authentication instead of using the default provider-specific code
 export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+gcp-impersonate() {
+  case "$1" in
+    --set)
+      if [[ -z "$2" ]]; then
+          echo "Error: --set requires a service account email" >&2
+          return 1
+      fi
+      gcloud config set auth/impersonate_service_account "$2"
+      ;;
+    --unset)
+      gcloud config unset auth/impersonate_service_account
+      ;;
+    *)
+      echo "Usage: gcp-impersonate [--set <SERVICE_ACCOUNT_EMAIL>|--unset]" >&2
+      return 1
+      ;;
+  esac
+}
+export GOOGLE_CLOUD_PROJECT="es-orion-dev" # for gemini
 
 
 #-:---------------------------------------------------------------------------#
@@ -144,6 +164,7 @@ source <(fzf --zsh) # add fzf features for zsh
 # vim / neovim                                                                #
 #-----------------------------------------------------------------------------#
 alias v='nvim'
+
 
 #-:---------------------------------------------------------------------------#
 # searching                                                                   #
@@ -240,16 +261,46 @@ function trd() {
 }
 
 #-:---------------------------------------------------------------------------#
+# terraform                                                                   #
+#-----------------------------------------------------------------------------#
+alias tf='terraform'
+
+
+#-:---------------------------------------------------------------------------#
+# kubernetes                                                                  #
+#-----------------------------------------------------------------------------#
+alias k='kubectl'
+
+
+#-:---------------------------------------------------------------------------#
 # keyboard maps                                                               #
 #-----------------------------------------------------------------------------#
 function ukm() {
-  if [[ $* == *--reset* ]]
-    then hidutil property --set '{"UserKeyMapping":[]}'
-  elif [[ $* == *--swap-tilde* ]]
-    # https://apple.stackexchange.com/questions/329085/tilde-and-plus-minus-%C2%B1-in-wrong-place-on-keyboard
-    then sudo hidutil property --set '{"UserKeyMapping":[ {"HIDKeyboardModifierMappingSrc":0x700000035,"HIDKeyboardModifierMappingDst":0x700000064}, {"HIDKeyboardModifierMappingSrc":0x700000064,"HIDKeyboardModifierMappingDst":0x700000035} ]}'
+  if [[ $* == *--reset* ]]; then
+    hidutil property --set '{"UserKeyMapping":[]}'
+    echo "Key mapping reset"
+  elif [[ $* == *--swap-tilde* ]]; then
+    hidutil property --set '{"UserKeyMapping":[
+      {"HIDKeyboardModifierMappingSrc":0x700000035,"HIDKeyboardModifierMappingDst":0x700000064},
+      {"HIDKeyboardModifierMappingSrc":0x700000064,"HIDKeyboardModifierMappingDst":0x700000035}
+    ]}'
+    echo "Tilde swapped"
+  else
+    local current
+    current=$(hidutil property --get UserKeyMapping)
+    if [[ "$current" == *"30064771125"* ]]; then
+      hidutil property --set '{"UserKeyMapping":[]}'
+      echo "Key mapping reset"
+    else
+      hidutil property --set '{"UserKeyMapping":[
+        {"HIDKeyboardModifierMappingSrc":0x700000035,"HIDKeyboardModifierMappingDst":0x700000064},
+        {"HIDKeyboardModifierMappingSrc":0x700000064,"HIDKeyboardModifierMappingDst":0x700000035}
+      ]}'
+      echo "Tilde swapped"
+    fi
   fi
 }
+
 
 #-:---------------------------------------------------------------------------#
 # python                                                                      #
@@ -259,9 +310,20 @@ function pydev() {
     then poetry add --group dev ipython pdbpp black flake8 isort mypy
   elif [[ $* == *--pip* ]]
     then pip install ipython pdbpp black flake8 isort mypy
+  elif [[ $* == *--uv* ]]
+    then uv pip install ipython pdbpp black flake8 isort mypy
   else
       echo "Invalid args"
   fi
+}
+
+
+#-:---------------------------------------------------------------------------#
+# other                                                                       #
+#-----------------------------------------------------------------------------#
+function cpf() {
+  # cat the contents of a file into pbcopy
+  cat $1 | pbcopy
 }
 
 #=:===========================================================================#
@@ -278,7 +340,7 @@ function pydev() {
 #-:---------------------------------------------------------------------------#
 # sensitive config not publically shared                                      #
 #-----------------------------------------------------------------------------#
-source ~/workspace/dotfiles/.zshrc_private
+source ~/workspace/personal/dotfiles/.zshrc_private
 
 
 #-:---------------------------------------------------------------------------#
@@ -288,18 +350,34 @@ source $ZSH/oh-my-zsh.sh
 
 # TODO
 export GPG_TTY="$(tty)"
-export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
-gpgconf --launch gpg-agent
+# export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+# gpgconf --launch gpg-agent
 alias gpg_restart='gpg-connect-agent updatestartuptty /bye'
 
-
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/ollehammarstrom/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/ollehammarstrom/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/ollehammarstrom/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/ollehammarstrom/google-cloud-sdk/completion.zsh.inc'; fi
 
 # Make it less likely that we accidentally overwrite files with redirect, copy, or move
 set -o noclobber
 alias cp='cp -i'
 alias mv='mv -i'
+
+# fnm (fast node manager) — lazy loaded, initialises on first use
+_load_fnm() {
+  unfunction node npm npx yarn pnpm fnm 2>/dev/null
+  eval "$(fnm env --use-on-cd --shell zsh)"
+}
+fnm()  { _load_fnm; fnm "$@"; }
+node() { _load_fnm; node "$@"; }
+npm()  { _load_fnm; npm "$@"; }
+npx()  { _load_fnm; npx "$@"; }
+yarn() { _load_fnm; yarn "$@"; }
+pnpm() { _load_fnm; pnpm "$@"; }
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/olle.hammarstrom/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/olle.hammarstrom/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/olle.hammarstrom/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/olle.hammarstrom/google-cloud-sdk/completion.zsh.inc'; fi
+
+# TBD
+export GEMINI_CLI_SYSTEM_DEFAULTS_PATH="~/workspace/personal/dotfiles/gemini/gemini-cli-system-defaults.json"
+alias claude-personal='CLAUDE_CONFIG_DIR=~/.claude-personal claude'

@@ -42,7 +42,7 @@ vim.opt.whichwrap:append 'h' -- use h to go to previous line
 vim.opt.whichwrap:append 'l' -- use l to go to next line
 vim.opt.tm = 500 -- how long to wait for command input
 vim.opt.number = true -- enable line numbers
-vim.opt.relativenumber = true -- combined with number, enables hybdrid
+vim.opt.relativenumber = true -- combined with number, enables hybrid
 vim.opt.signcolumn = 'yes' -- always show signcolumn
 vim.opt.listchars = "tab:> ,trail:-,nbsp:+,space:·,multispace:|···,eol:↴"
 vim.opt.list = true -- show the above
@@ -66,7 +66,7 @@ vim.keymap.set('n', '<leader><cr>', ':noh<cr>', { silent = true}) -- keybind to 
 -------------------------------------------------------------------------------
 -- delete trailing whitespace on save
 -- this currently does not work as intended if the search was done using *
--- to search for the word under the cursos, as that appears to store the
+-- to search for the word under the cursor, as that appears to store the
 -- search in a different way
 vim.api.nvim_create_autocmd({ "BufWritePre" }, {
   pattern = { "*" },
@@ -166,15 +166,49 @@ vim.keymap.set('v', '<leader>d', '"+d')
 -- inspiration: https://github.com/jgillies/vim-dbt
 -- inspiration: https://github.com/ivanovyordan/dbt.vim
 -- inspiration: https://discourse.getdbt.com/t/syntax-highlighting-sql-linting/15/3
--- not figured out how to do this in lua yet
-vim.cmd [[
-  autocmd FileType dbt setlocal commentstring={#%s#}
-  au BufNewFile,BufRead *.sql set ft=dbt
-  autocmd FileType sql setlocal commentstring=/*%s*/
-]]
+-- treat *.sql as dbt when the path contains "dbt" to avoid a filesystem check for dbt_project.yml
+vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
+  pattern = "*.sql",
+  callback = function(args)
+    -- args.file can be relative (e.g. opened as `:e models/foo.sql` from a
+    -- cwd already inside the dbt-named folder); normalize before matching
+    local path = vim.fn.fnamemodify(args.file, ":p"):lower()
+    if path:find("dbt", 1, true) then
+      vim.bo[args.buf].filetype = "dbt"
+    end
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "dbt",
+  command = "setlocal commentstring={#%s#}",
+})
+
+-- gf on a ref('model_name') jumps to the model/snapshot file; relies on cwd
+-- being the dbt project root (models/snapshots resolved relative to 'path')
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "dbt",
+  callback = function()
+    vim.opt_local.path:append({ "models/**", "snapshots/**" })
+    vim.opt_local.suffixesadd:append(".sql")
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "sql",
+  command = "setlocal commentstring=/*%s*/",
+})
 -- disable sql drilldown keymap replacing arrow keys in sql files
 -- see https://superuser.com/questions/139620/lost-left-right-cursor-keys-in-vim-insert-mode
 vim.g['omni_sql_no_default_maps'] = 1
+
+--:----------------------------------------------------------------------------
+-- dataform
+-------------------------------------------------------------------------------
+vim.api.nvim_create_autocmd({"BufNewFile", "BufRead"}, {
+  pattern = "*.sqlx",
+  command = "set ft=sql"
+})
 
 
 --:----------------------------------------------------------------------------
@@ -323,7 +357,8 @@ vim.keymap.set('t', '<c-w>l', '<c-\\><c-n><c-w>l')
 -- BigQuery
 vim.keymap.set('n', '<leader>tq', ":exec('T cat % | bq query --max_rows=100')")
 vim.keymap.set('n', '<leader>td', ":exec('T cat % | bq_dry')<CR>")
-vim.keymap.set('n', '<leader>tf', ":exec('T cat % | bq query --format=csv --max_rows=1000000 > output.csv')")
+vim.keymap.set('n', '<leader>tf', ":exec('T cat % | bq query --format=csv --max_rows=1000000 >| output.csv')")
+vim.keymap.set('n', '<leader>tj', ":exec('T cat % | bq query --format=prettyjson --max_rows=10 >| output.json')")
 
 -- REPL
 -- not validated yet
@@ -435,6 +470,7 @@ vim.keymap.set('n', '<leader>g', builtin.live_grep, {}) -- find inside files
 vim.keymap.set('n', '<leader>fh', function() builtin.oldfiles({ only_cwd = true }) end, {}) -- find recent files
 vim.keymap.set('n', '<leader>fc', builtin.git_bcommits, {}) -- find commits in current file with diffs
 vim.keymap.set('n', '<leader><s-t>', ':Telescope<CR>') -- open telescope
+vim.keymap.set('n', '<leader>d', function() builtin.diagnostics({}) end, {}) -- all repo LSP diagnostics
 
 -- inspiration: https://www.reddit.com/r/neovim/comments/w4qsju/toggle_preview_in_telescope/
 require('telescope').setup{
@@ -618,7 +654,26 @@ vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(
 vim.opt.winborder = 'single'
 
 require('mason').setup({})
-require('mason-lspconfig').setup({})
+
+
+--:----------------------------------------------------------------------------
+-- LSP - servers
+-------------------------------------------------------------------------------
+require('mason-lspconfig').setup({
+  automatic_enable = {
+    exclude = { 'pyright', 'eslint' },
+  },
+})
+
+-- lspconfig setup for languages not included here use mason-lspconfig defaults
+require('lspconfig').eslint.setup({
+  settings = {
+    eslint_lsp = {
+      enable = true,
+    }
+  },
+  single_file_support = true,
+})
 
 local lspconfig = require('lspconfig')
 local lsp_defaults = lspconfig.util.default_config
@@ -629,17 +684,23 @@ lsp_defaults.capabilities = vim.tbl_deep_extend(
   require('cmp_nvim_lsp').default_capabilities()
 )
 
-
---:----------------------------------------------------------------------------
--- LSP - python, lua, golang, terraform, bash, rust
--------------------------------------------------------------------------------
--- lspconfig setup for these languages are handled by mason-lspconfig
+-- analyze the whole workspace on startup, not just open buffers, so
+-- workspace-wide diagnostics (e.g. Telescope's diagnostics picker) are populated
+lspconfig.pyright.setup({
+  settings = {
+    python = {
+      analysis = {
+        diagnosticMode = 'workspace',
+      },
+    },
+  },
+})
 
 
 --:----------------------------------------------------------------------------
 -- vim-wiki
 -------------------------------------------------------------------------------
-vim.g.vimwiki_list = {{path = '~/workspace/trustly-wiki', syntax = 'markdown', ext = '.md'}}
+vim.g.vimwiki_list = {{path = '~/workspace/personal/epidemic-sound-wiki', syntax = 'markdown', ext = '.md'}}
 vim.g.vimwiki_global_ext = 0
 vim.keymap.set('i', '<c-tab>', '<Plug>VimwikiTableNextCell')
 vim.keymap.set('i', '<a-tab>', '<Plug>VimwikiTablePrevCell')
@@ -658,7 +719,7 @@ vim.keymap.set('i', '<C-_>', '<Plug>(copilot-previous)')
 -- using the right arrow to complete feels more natural since we have ghost
 -- text, although leaving the tab for now to see which I prefer
 vim.cmd [[
-  imap <silent><script><expr> <Right> copilot#Accept("")
+  imap <silent><script><expr> <Right> copilot#Accept("\<Right>")
 ]]
 vim.g.copilot_no_tab_map = true
 
