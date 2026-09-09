@@ -1,0 +1,29 @@
+#!/bin/bash
+# Ambient signal for the centre of the tmux status bar.
+#   !N  agents blocked on me
+#   ~N  agents finished and waiting on me
+#   /N  agents still working
+# Prints nothing only when no agent is live, so an empty centre means an empty
+# fleet, not a quiet one.
+#
+# Two colours, not three: !/~ need me, / does not. #8ec07c is the only gruvbox
+# accent the bar does not already use, #a89984 is the muted grey. Taken:
+# #458588 and #d65d0e (status-right), #98971a and #d79921 (status-left),
+# #b16286 and #d3869b (window status, pane border), #fbf1c7 (bar foreground).
+ACCENT='#8ec07c'
+MUTED='#a89984'
+BG='#282828'
+
+st=$("$HOME/.claude/bin/agent-state" 2>/dev/null | cut -f1)
+[ -n "$st" ] || exit 0
+w=$(printf '%s\n' "$st" | grep -cx 'waiting' | tr -d ' ')
+i=$(printf '%s\n' "$st" | grep -cxE 'idle|shell' | tr -d ' ')
+r=$(printf '%s\n' "$st" | grep -cvxE 'waiting|idle|shell' | tr -d ' ')
+
+out=""
+[ "${w:-0}" -gt 0 ] && out="$out#[fg=$ACCENT,bg=$BG]!$w "
+[ "${i:-0}" -gt 0 ] && out="$out#[fg=$ACCENT,bg=$BG]~$i "
+[ "${r:-0}" -gt 0 ] && out="$out#[fg=$MUTED,bg=$BG]/$r "
+[ -n "$out" ] || exit 0
+
+printf '%s' "${out% }"

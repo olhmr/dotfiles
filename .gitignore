@@ -1,1 +1,7 @@
 .zshrc_private
+*.log
+.DS_Store
+
+# nvim writes a virtualenv under its config directory
+nvim/python-env/
+nvim/plugged/

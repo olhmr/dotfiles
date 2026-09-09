@@ -1,0 +1,80 @@
+#!/bin/bash
+# One row per live coding agent, most urgent first:
+#   state <TAB> detail <TAB> name <TAB> repo <TAB> age <TAB> target <TAB> cwd
+#
+# target is either a tmux pane (%12) or a background session id (@c3dae6cb).
+# The two need different actions: a pane is switched to, a background session
+# is attached into a new window, because it has no pane of its own.
+#
+# The pane is derived, never recorded: pid -> controlling tty -> tmux pane.
+# So there are no hooks and no state that can go stale. Adapters emit six
+# fields, so supporting another agent tool is one function.
+set -uo pipefail
+
+# `claude agents --json` is the documented surface, but it collapses states:
+# anything that is not idle or waiting is reported as busy, so a session at a
+# shell prompt looks like one that is working. The per-pid session file keeps
+# the distinction, so it wins when present and the API is the fallback.
+claude_rows() {
+  command -v claude >/dev/null 2>&1 || return 0
+  claude agents --json 2>/dev/null | jq -r '
+    .[] | select(.status != null)
+    | [ .status, (.waitingFor // "-"), (.name // "-"), (.cwd // "-"),
+        (.pid // "-"), (.kind // "-"), (.sessionId // "-") ]
+    | @tsv'
+}
+# --- further adapters go here, same seven fields ---
+
+rank_of() {
+  case "$1" in
+    waiting)     echo 0 ;;
+    idle|shell)  echo 1 ;;
+    *)           echo 2 ;;
+  esac
+}
+
+humanise() {   # seconds -> 45s / 12m / 3h / 7d
+  s=${1:-0}
+  if   [ "$s" -lt 60 ]    ; then printf '%ds' "$s"
+  elif [ "$s" -lt 3600 ]  ; then printf '%dm' $((s / 60))
+  elif [ "$s" -lt 86400 ] ; then printf '%dh' $((s / 3600))
+  else                           printf '%dd' $((s / 86400))
+  fi
+}
+
+rows=$(claude_rows)
+[ -n "$rows" ] || exit 0
+
+tty_map=$(tmux list-panes -a -F '#{pane_tty} #{pane_id}' 2>/dev/null || true)
+now_ms=$(( $(date +%s) * 1000 ))
+
+printf '%s\n' "$rows" | while IFS=$'\t' read -r state detail name cwd pid kind sid; do
+  [ -n "${state:-}" ] || continue
+
+  age="-"
+  if [ -n "${pid:-}" ] && [ "$pid" != "-" ] && [ -r "$HOME/.claude/sessions/$pid.json" ]; then
+    read -r fstate fstamp < <(jq -r '"\(.status // "-") \(.statusUpdatedAt // 0)"' \
+      "$HOME/.claude/sessions/$pid.json" 2>/dev/null)
+    [ -n "${fstate:-}" ] && [ "$fstate" != "-" ] && [ "$fstate" != "null" ] && state="$fstate"
+    if [ -n "${fstamp:-}" ] && [ "$fstamp" != "0" ] && [ "$fstamp" != "null" ]; then
+      age=$(humanise $(( (now_ms - fstamp) / 1000 )))
+    fi
+  fi
+
+  target="-"
+  if [ "$kind" = "background" ]; then
+    # A background session runs under the supervisor, not in a pane. Its short
+    # id is the first segment of the session id, which is what `attach` takes.
+    [ "$sid" != "-" ] && target="@${sid%%-*}"
+  elif [ -n "${pid:-}" ] && [ "$pid" != "-" ]; then
+    tty=$(ps -o tty= -p "$pid" 2>/dev/null | tr -d ' ')
+    if [ -n "$tty" ] && [ "$tty" != "??" ]; then
+      p=$(printf '%s\n' "$tty_map" | awk -v t="/dev/$tty" '$1==t{print $2; exit}')
+      [ -n "$p" ] && target="$p"
+    fi
+  fi
+
+  printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+    "$(rank_of "$state")" "$state" "$detail" "$name" "$(basename "$cwd")" \
+    "$age" "$target" "$cwd"
+done | sort -n | cut -f2-

@@ -118,7 +118,6 @@ gcp-impersonate() {
       ;;
   esac
 }
-export GOOGLE_CLOUD_PROJECT="es-orion-dev" # for gemini
 
 
 #-:---------------------------------------------------------------------------#
@@ -340,7 +339,7 @@ function cpf() {
 #-:---------------------------------------------------------------------------#
 # sensitive config not publically shared                                      #
 #-----------------------------------------------------------------------------#
-source ~/workspace/personal/dotfiles/.zshrc_private
+[ -f ~/.zshrc_private ] && source ~/.zshrc_private
 
 
 #-:---------------------------------------------------------------------------#
@@ -378,6 +377,4 @@ if [ -f '/Users/olle.hammarstrom/google-cloud-sdk/path.zsh.inc' ]; then . '/User
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/olle.hammarstrom/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/olle.hammarstrom/google-cloud-sdk/completion.zsh.inc'; fi
 
-# TBD
-export GEMINI_CLI_SYSTEM_DEFAULTS_PATH="~/workspace/personal/dotfiles/gemini/gemini-cli-system-defaults.json"
 alias claude-personal='CLAUDE_CONFIG_DIR=~/.claude-personal claude'

@@ -1,0 +1,6 @@
+# Copy to the private dotfiles repo, then link it to ~/.zshrc_private.
+# Holds anything that names an employer system, project, ticket or colleague.
+
+# export SOME_PROJECT="..."
+# alias bastion='...'
+# export GOPROXY=...

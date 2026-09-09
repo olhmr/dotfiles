@@ -1,0 +1,19 @@
+#!/bin/bash
+# Go to one agent. A pane target is switched to. A background target has no
+# pane, so it is attached into a new tmux window in its own directory.
+set -uo pipefail
+target="${1:-}"; cwd="${2:-$HOME}"
+[ -n "$target" ] && [ "$target" != "-" ] || { tmux display-message "no target"; exit 0; }
+
+case "$target" in
+  %*)
+    tmux list-panes -a -F '#{pane_id}' | grep -qxF "$target" \
+      || { tmux display-message "pane $target is gone"; exit 0; }
+    client=$(tmux list-clients -F '#{client_name}' | head -1)
+    [ -n "$client" ] && exec tmux switch-client -c "$client" -t "$target"
+    ;;
+  @*)
+    id="${target#@}"
+    exec tmux new-window -c "$cwd" -n "attach:$id" "claude attach '$id'"
+    ;;
+esac

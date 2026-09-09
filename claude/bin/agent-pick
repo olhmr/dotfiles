@@ -1,0 +1,48 @@
+#!/bin/bash
+# The inbox: pick an agent, go to it. Bound to prefix+a via display-popup.
+#
+# Column widths are measured from the rows present, then capped, so one long
+# session name cannot push the rest out of line.
+set -uo pipefail
+
+rows=$("$HOME/.claude/bin/agent-state")
+if [ -z "$rows" ]; then echo "no live agents"; sleep 1; exit 0; fi
+
+# Emits: padded display <TAB> target <TAB> cwd. Row 1 is the header.
+display=$(printf '%s\n' "$rows" | awk -F'\t' '
+  function fit(s, n) { return (length(s) > n) ? substr(s, 1, n - 2) ".." : s }
+  BEGIN {
+    m1 = 8; m2 = 20; m3 = 34; m4 = 26; m5 = 5; m6 = 10
+    h1 = "STATE"; h2 = "BLOCKED ON"; h3 = "NAME"; h4 = "REPO"; h5 = "AGE"; h6 = "WHERE"
+    w1 = length(h1); w2 = length(h2); w3 = length(h3)
+    w4 = length(h4); w5 = length(h5); w6 = length(h6)
+  }
+  {
+    n++
+    a[n] = fit($1, m1); b[n] = fit($2, m2); c[n] = fit($3, m3)
+    d[n] = fit($4, m4); e[n] = fit($5, m5); f[n] = fit($6, m6)
+    t[n] = $6; q[n] = $7
+    if (length(a[n]) > w1) w1 = length(a[n])
+    if (length(b[n]) > w2) w2 = length(b[n])
+    if (length(c[n]) > w3) w3 = length(c[n])
+    if (length(d[n]) > w4) w4 = length(d[n])
+    if (length(e[n]) > w5) w5 = length(e[n])
+    if (length(f[n]) > w6) w6 = length(f[n])
+  }
+  END {
+    fmt = "%-" w1 "s  %-" w2 "s  %-" w3 "s  %-" w4 "s  %" w5 "s  %-" w6 "s\t%s\t%s\n"
+    printf fmt, h1, h2, h3, h4, h5, h6, "-", "-"
+    for (i = 1; i <= n; i++) printf fmt, a[i], b[i], c[i], d[i], e[i], f[i], t[i], q[i]
+  }')
+
+sel=$(printf '%s\n' "$display" \
+  | fzf --no-sort --reverse --header-lines=1 \
+        --delimiter='\t' --with-nth=1) || exit 0
+[ -n "$sel" ] || exit 0
+
+target=$(printf '%s\n' "$sel" | cut -f2)
+cwd=$(printf '%s\n' "$sel" | cut -f3)
+if [ -z "$target" ] || [ "$target" = "-" ]; then
+  echo "that agent has nowhere to go"; sleep 1; exit 0
+fi
+exec "$HOME/.claude/bin/agent-goto" "$target" "$cwd"
