@@ -1,71 +1,108 @@
-# TODO: manage different install envs (ubuntu vs macos)
-preamble:
-	@echo "Some additional installs may be neccesary depending on the system. This is still a work in progress."
+# Dotfiles installer.
+#
+# Installation links, it does not copy. A copy is one-directional: an edit made
+# live is invisible to git and is destroyed by the next install. That is what
+# caused four months of silent drift. With links, `git status` tells the truth.
+#
+# Usage on a new machine:
+#   make backup && make link && make doctor
+#
+# PRIVATE is the private config repo. Override it if yours lives elsewhere.
 
-update-installs:
-	sudo apt update
+REPO    := $(shell pwd)
+PRIVATE ?= $(HOME)/workspace/personal/dotfiles-private
+STAMP   := $(shell date +%Y%m%d-%H%M%S)
+BACKUP  := $(HOME)/dotfiles-backups/$(STAMP)
 
-# if on ubuntu, uninstall snap curl and reinstall using apt
-# the snap version does not work properly
-# see https://askubuntu.com/questions/1387141/curl-23-failure-writing-output-to-destination
-fix-curl: update-installs
-	sudo snap remove curl
-	sudo apt install curl
+# Link targets, as "live path:repo path" pairs.
+# Directories are linked whole where the whole directory is ours (nvim, kitty).
+# Individual files are linked where the directory is shared (~, ~/.claude).
+PUBLIC_LINKS := \
+	$(HOME)/.zshrc:$(REPO)/zsh/.zshrc \
+	$(HOME)/.p10k.zsh:$(REPO)/zsh/.p10k.zsh \
+	$(HOME)/.tmux.conf:$(REPO)/tmux/.tmux.conf \
+	$(HOME)/.visidatarc:$(REPO)/visidata/.visidatarc \
+	$(HOME)/.config/kitty:$(REPO)/kitty \
+	$(HOME)/.config/nvim:$(REPO)/nvim \
+	$(HOME)/.claude/bin:$(REPO)/claude/bin
 
-install-python: update-installs fix-curl
-	# install a global python version for general usage
-	sudo apt install python3.11 -y
-	sudo apt install python3-pip -y
-	python3 -m pip install --user pipx
-	sudo apt install python3.11-venv -y
-	@echo "Did you see an error because pipx is missing? Restart the shell and try again."
-	pipx install poetry
-	curl https://pyenv.run | bash # manage different python version for different projects
-	@echo "Make sure to follow pyenv instructions to modify .zshrc"
+PRIVATE_LINKS := \
+	$(HOME)/.zshrc_private:$(PRIVATE)/zsh/.zshrc_private \
+	$(HOME)/.claude/settings.json:$(PRIVATE)/claude/settings.json \
+	$(HOME)/.claude/CLAUDE.md:$(PRIVATE)/claude/CLAUDE.md \
+	$(HOME)/.claude/statusline-command.sh:$(PRIVATE)/claude/statusline-command.sh \
+	$(HOME)/.claude/hooks:$(PRIVATE)/claude/hooks
 
-install-zsh: update-installs fix-curl
-	cp .zshrc ${HOME}/.zshrc
-	touch .zshrc_private
-	sudo apt install zsh -y
-	curl -LJO https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
-	chmod +x install.sh
-	./install.sh
-	rm install.sh
+ALL_LINKS := $(PUBLIC_LINKS) $(PRIVATE_LINKS)
 
-install-zsh-extensions:
-	git clone https://github.com/zsh-users/zsh-autosuggestions ${HOME}/.oh-my-zsh/custom/plugins/zsh-autosuggestions
-	sudo apt install autojump -y
-	cp .zshrc ${HOME}/
+.PHONY: help backup link link-public link-private unlink doctor brew-dump
 
-install-font: fix-curl
-	curl -LJO https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/FantasqueSansMono/Regular/FantasqueSansMNerdFontMono-Regular.ttf
-	@echo "Please install the font manually"
-	open FantasqueSansMNerdFontMono-Regular.ttf
-	@echo "Please select the font as the font to use in your terminal. This may require restarting the terminal first."
-	@echo "If you notice that icons are not the right size you may need to install a different version of the font."
+help:
+	@echo "backup   copy every path install would touch to $(HOME)/dotfiles-backups/<stamp>"
+	@echo "link     link public and private config into place (run backup first)"
+	@echo "unlink   remove only the links this Makefile made"
+	@echo "doctor   report drift: real files where links are expected, and dangling links"
+	@echo "brew-dump  refresh the Brewfile from the current machine"
 
-install-p10k:
-	git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${HOME}/.oh-my-zsh/custom/themes/powerlevel10k
-	cp .p10k.zsh ${HOME}/
+# The first link run replaces live files. This is not optional.
+backup:
+	@mkdir -p "$(BACKUP)"
+	@for pair in $(ALL_LINKS); do \
+		live="$${pair%%:*}"; \
+		if [ -e "$$live" ] && [ ! -L "$$live" ]; then \
+			dest="$(BACKUP)/$$(echo "$${live#$(HOME)/}" | tr / _)"; \
+			cp -a "$$live" "$$dest"; \
+			echo "backed up $$live"; \
+		fi; \
+	done
+	@echo "backup at $(BACKUP)"
 
-install-nvim: fix-curl
-	# snap has a later version than apt
-	sudo snap install nvim --classic
-	@echo "Installing vim-plug"
-	sh -c 'curl -fLo ${HOME}/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-	cp -r nvim ${HOME}/.config/
+link: link-public link-private
 
-install-fzf:
-	sudo apt install fzf
-	# build-essential is required for telescope-fzf interaction
-	sudo apt install build-essential
+link-public:
+	@$(MAKE) --no-print-directory _link PAIRS="$(PUBLIC_LINKS)"
 
-install-visidata:
-	sudo apt install visidata
+link-private:
+	@if [ ! -d "$(PRIVATE)" ]; then \
+		echo "private repo not found at $(PRIVATE); set PRIVATE=<path>"; exit 1; \
+	fi
+	@$(MAKE) --no-print-directory _link PAIRS="$(PRIVATE_LINKS)"
 
-nvim-info:
-	@echo "Open neovim - it will error because we haven't installed the colorscheme yet"
-	@echo "Run :PlugInstall, then restart neovim"
+_link:
+	@for pair in $(PAIRS); do \
+		live="$${pair%%:*}"; repo="$${pair#*:}"; \
+		if [ ! -e "$$repo" ]; then echo "SKIP  $$live (no $$repo)"; continue; fi; \
+		mkdir -p "$$(dirname "$$live")"; \
+		if [ -L "$$live" ] && [ "$$(readlink "$$live")" = "$$repo" ]; then \
+			echo "ok    $$live"; continue; \
+		fi; \
+		rm -rf "$$live"; \
+		ln -s "$$repo" "$$live"; \
+		echo "link  $$live -> $$repo"; \
+	done
 
-ubuntu:
-	@echo "Haven't worked out how to do this in a reliable way yet, as some stages requires restarts. In the meantime, run the make targets manually from top to bottom".
+unlink:
+	@for pair in $(ALL_LINKS); do \
+		live="$${pair%%:*}"; repo="$${pair#*:}"; \
+		if [ -L "$$live" ] && [ "$$(readlink "$$live")" = "$$repo" ]; then \
+			rm "$$live"; echo "removed $$live"; \
+		fi; \
+	done
+	@echo "live paths are now absent; restore from a backup or run make link"
+
+# How drift gets caught next time.
+doctor:
+	@fail=0; \
+	for pair in $(ALL_LINKS); do \
+		live="$${pair%%:*}"; repo="$${pair#*:}"; \
+		if [ ! -e "$$repo" ]; then printf 'MISSING  %s (repo file absent)\n' "$$live"; fail=1; \
+		elif [ -L "$$live" ]; then \
+			if [ "$$(readlink "$$live")" = "$$repo" ]; then printf 'ok       %s\n' "$$live"; \
+			else printf 'WRONG    %s -> %s\n' "$$live" "$$(readlink "$$live")"; fail=1; fi; \
+		elif [ -e "$$live" ]; then printf 'DRIFT    %s is a real file, not a link\n' "$$live"; fail=1; \
+		else printf 'ABSENT   %s\n' "$$live"; fail=1; fi; \
+	done; \
+	exit $$fail
+
+brew-dump:
+	brew bundle dump --force --file=Brewfile

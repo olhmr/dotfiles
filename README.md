@@ -1,118 +1,134 @@
-## dotfiles
+# dotfiles
 
-Dotfiles for personal use.
+Personal configuration for zsh, tmux, kitty, neovim, visidata and the
+Claude Code agent scripts.
 
-Common tooling regardless of environment:
-- zsh with oh-my-zsh and p10k as shell
-- neovim for editing
-- visidata for spreadsheets
-- marp for presentations (run in Docker to avoid Node and Chrome overhead)
+Installation **links**, it does not copy. An edit made live is an edit to the
+repo, and `git status` tells the truth. Copying is what let four months of
+config edits drift out of git unnoticed.
 
-For MacOS:
-- iterm2 as terminal
+## Layout
 
-## Installation notes
+| Directory | Holds |
+|-----------|-------|
+| `zsh/` | `.zshrc`, `.p10k.zsh`, an example private overrides file |
+| `tmux/` | `.tmux.conf`, including the agent status bar |
+| `kitty/` | `kitty.conf` |
+| `nvim/` | `init.lua`, snippets, `after/` syntax |
+| `claude/bin/` | The `agent-*` inbox scripts |
+| `visidata/` | `.visidatarc` |
+| `iterm/` | Old iTerm2 colour schemes, kept for reference |
+| `macos/` | Hammerspoon config |
 
-For Docker in any enviroment, see https://docs.docker.com/engine/install/
-For poetry in any environment, see https://python-poetry.org/docs/#installation
+## Install
 
-### Ubuntu
-
-A Makefile target exists for Ubuntu. It is still being tested, so in case of errors please read through the file and adjust as necessary.
 ```bash
-    $ make ubuntu
+make backup   # copies every path the install will touch
+make link     # replaces those paths with links into this repo
+make doctor   # reports any path that is not the link it should be
 ```
 
-### MacOS
+`make doctor` is how drift gets caught next time. It exits non-zero if any
+path is a real file where a link is expected.
 
-There is no make target for MacOS. Instead, the following has to be installed manually. There is a greater risk of missing elements in this list, so adjust as necessary.
+`make unlink` removes only the links this Makefile made. It does not restore
+the originals, so restore those from `~/dotfiles-backups/<stamp>`.
 
-Install homebrew: https://brew.sh/
-Install iterm2: https://iterm2.com/
-Install zsh: `brew install zsh`
-Install oh-my-zsh: https://ohmyz.sh/#install
-Install zsh-autosuggestions: https://github.com/zsh-users/zsh-autosuggestions/blob/master/INSTALL.md
-Install autojump: `brew install autojump`
-Install python
-Install pyenv: `brew install pyenv`
-Install tfenv: `brew install tfenv`
-Install tmux
-    (https://unix.stackexchange.com/a/555969 - if vim freezes)
-Install tpm: https://github.com/tmux-plugins/tpm
-Install gruvbox-tmux: https://github.com/thoreinstein/gruvbox-tmux
-Install neovim
+## The private repo
 
-#### iTerm2
+This repo is public. Anything that names an employer system, a project id, a
+ticket or a colleague lives in a separate private repo instead. That is the
+rule, so the decision does not need making again each time.
 
-Import the colorscheme from this repo.
+Private config lives in `dotfiles-private`, expected at
+`~/workspace/personal/dotfiles-private`. Override the path:
 
-In Mac Settings -> Keyboard -> Keyboard Shortcuts -> App Shortcuts, add a shortcut for iTerm called `Close` set to `cmd + shift + w`. This will ensure that `cmd + w` doesn't close tabs or windows.
-
-Download the patched `Fantasque Sans Mono` nerd font - *not* the one from nerdfonts.com. You need two fonts:
-1. https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/FantasqueSansMono/Regular/FantasqueSansMNerdFontMono-Regular.ttf - this is the general font
-2. https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/FantasqueSansMono/Regular/FantasqueSansMNerdFont-Regular.ttf - this is for icons
-
-We use the second font for non-ASCII characters in iTerm as otherwise the icons become very small.
-
-Double-click the file to add to Mac.
-
-Change font in iTerm to use new font, and set size to 14.
-
-#### neovim
-Helpful info on neovim config in lua:
-- https://neovim.io/doc/user/lua.html
-- https://vonheikemen.github.io/devlog/tools/configuring-neovim-using-lua/
-- https://vonheikemen.github.io/devlog/tools/build-your-first-lua-config-for-neovim/
-
-Install neovim:
-```
-  $ brew install neovim
+```bash
+make link PRIVATE=/some/other/path
 ```
 
-Install vim-plug: https://github.com/junegunn/vim-plug
+It holds the agent settings file, the global instructions file, the hooks
+directory, the statusline script and `.zshrc_private`.
 
-Copy `nvim/` to `~/.config/`
+### Deliberately not tracked anywhere
 
-Create `~/.config/nvim/python-env` and navigate there
+- `hooks/card.log` records prompts verbatim, including ticket references. It
+  also grows with every prompt.
+- `nvim/python-env/`, a virtualenv. Recreate it, see below.
+- `~/.claude/` itself, apart from the config paths. The agent writes sessions,
+  jobs, projects and backups there.
 
-Ensure `pyenv` is installed and version 3.9.11 is available (if not: `pyenv install 3.9.11`)
+## Prerequisites
 
-Run:
-```
-  $ pyenv local 3.9.11
-  $ python3 -m venv env
-  $ /Users/<user>/.config/nvim/python-env/env/bin/python3 -m pip install pynvim
-```
+Install Homebrew first: https://brew.sh/
 
-Open neovim and run `:PlugInstall`
-
-For improved performance when fuzzy finding, ensure ripgrep and fd are installed (see `:checkhealth telescope` after installing telescope)
-
-There are two reasons for not using treesitter:
-- ran into some bugs with the highlights being inconsistent (e.g., for SQL highlighting the alias after `AS` differently on different lines)
-- no support for jinja2 / dbt
-
-##### LSPs
-
-###### Lua
-
-```
-  :MasonInstall lua-language-server
+```bash
+brew bundle --file=Brewfile
 ```
 
-###### Python
+`make brew-dump` refreshes the `Brewfile` from the current machine.
+
+### kitty
+
+Install with the official installer, not Homebrew, because the cask lags:
+
+```bash
+curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
+ln -sf ~/.local/kitty.app/Contents/MacOS/kitty  ~/.local/bin/kitty
+ln -sf ~/.local/kitty.app/Contents/MacOS/kitten ~/.local/bin/kitten
+```
+
+**Terminfo.** `xterm-kitty` is not in the system terminfo database. That only
+matters over ssh, where `kitten ssh` sends the entry across for you. Use
+`kitten ssh <host>`, not `ssh <host>`.
+
+### Fonts
+
+A missing font is the most likely cause of a broken first run. Install both
+patched Fantasque Sans Mono faces from ryanoasis/nerd-fonts, not the ones
+from nerdfonts.com:
+
+1. `FantasqueSansMNerdFontMono-Regular.ttf`, the general font.
+2. `FantasqueSansMNerdFont-Regular.ttf`, for icons.
+
+The second is needed because the mono face renders icons too small.
+
+### tmux
+
+Install tmux, then tpm: https://github.com/tmux-plugins/tpm
+
+### neovim
+
+The python provider needs a virtualenv inside the config directory. It is
+gitignored, so create it after linking:
+
+```bash
+cd nvim && mkdir -p python-env && cd python-env
+pyenv local 3.9.11
+python3 -m venv env
+./env/bin/python3 -m pip install pynvim
+```
+
+Install vim-plug (https://github.com/junegunn/vim-plug), open neovim, run
+`:PlugInstall`.
+
+Install ripgrep and fd for telescope performance. Check with
+`:checkhealth telescope`.
+
+Treesitter is deliberately unused. Its SQL highlighting was inconsistent, and
+it has no jinja2 or dbt support.
+
+Language servers, through Mason:
 
 ```
-  :MasonInstall pyright
+:MasonInstall lua-language-server
+:MasonInstall pyright
 ```
 
-###### Scala
+For Scala, see https://github.com/scalameta/nvim-metals
 
-See https://github.com/scalameta/nvim-metals
+## Other tooling
 
-### Other tooling
-
-- [Spectacle](https://github.com/eczarny/spectacle) for multiplexing
-- [Raycast](https://www.alfredapp.com/) for better spotlight search
-  Add `cmd + shift + v` as a shortcut for the `Clipboard History` extension
-- [f.lux](https://justgetflux.com/) as a blue-light filter
+- [Raycast](https://www.raycast.com/) for search. Bind `cmd + shift + v` to
+  the Clipboard History extension.
+- [f.lux](https://justgetflux.com/) as a blue-light filter.
